@@ -2,14 +2,8 @@
 // It has the same sandbox as a Chrome extension.
 const { contextBridge, ipcRenderer } = require("electron");
 
-contextBridge.exposeInMainWorld("versions", {
-  node: () => process.versions.node,
-  chrome: () => process.versions.chrome,
-  electron: () => process.versions.electron,
-  ping: () => ipcRenderer.invoke("ping"),
-  // we can also expose variables, not just functions
-});
-
-contextBridge.exposeInMainWorld("files", {
-  fileList: () => ipcRenderer.invoke("fileList"),
+contextBridge.exposeInMainWorld("electronAPI", {
+  openFile: () => ipcRenderer.invoke("dialog:openFile"),
+  showFile: (/** @type {string} */ filePath) =>
+    ipcRenderer.send("show:file", filePath),
 });

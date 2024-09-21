@@ -44,6 +44,7 @@
     "@electron-forge/plugin-auto-unpack-natives": "^7.5.0",
     "@electron-forge/plugin-fuses": "^7.5.0",
     "@electron/fuses": "^1.8.0",
+    "@rabbitholesyndrome/electron-forge-maker-portable": "^0.2.0",
     "@types/jasmine": "~5.1.0",
     "electron": "^32.1.2",
     "jasmine-core": "~5.2.0",

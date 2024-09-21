@@ -4,14 +4,27 @@
   </button>
   <span>Louvre</span>
   <span></span>
-  <button mat-icon-button aria-label="Example icon-button with heart icon">
-    <mat-icon>favorite</mat-icon>
+  <button
+    mat-icon-button
+    aria-label="Icon button to shuffle images"
+    (click)="randomize()"
+  >
+    <mat-icon>shuffle</mat-icon>
   </button>
   <button
     mat-icon-button
-    (click)="serverPing()"
-    aria-label="Example icon-button with share icon"
+    (click)="selectDirectory()"
+    aria-label="Icon button to set the directory to load images"
   >
-    <mat-icon>share</mat-icon>
+    <mat-icon>folder</mat-icon>
   </button>
+  <mat-paginator
+    (page)="handlePageEvent($event)"
+    [length]="filesService.imagesOrdered().length"
+    [pageSize]="displayService.pageSize()"
+    [pageIndex]="displayService.pageIndex()"
+    [pageSizeOptions]="[0, 10, 20, 50, 100, 200]"
+    aria-label="Select page"
+  >
+  </mat-paginator>
 </mat-toolbar>

@@ -1,1 +1,9 @@
-<p>body-panel works!</p>
+@for(imgsrc of currentImages(); track imgsrc) {
+<img
+  [ngSrc]="imgsrc"
+  [width]="displayService.imageConfigs().width"
+  [height]="displayService.imageConfigs().height"
+  [loading]="displayService.imageConfigs().loading"
+  (click)="showFile(imgsrc)"
+/>
+}

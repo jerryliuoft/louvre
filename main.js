@@ -1,5 +1,5 @@
 // Modules to control application life and create native browser window
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
 const path = require("node:path");
 const fs = require("node:fs");
 
@@ -21,13 +21,25 @@ const createWindow = () => {
 };
 if (require("electron-squirrel-startup")) app.quit();
 
+async function handleFileOpen() {
+  const { canceled, filePaths } = await dialog.showOpenDialog({
+    properties: ["openDirectory"],
+  });
+  if (!canceled) {
+    return fs.readdirSync(filePaths[0], {
+      withFileTypes: true,
+      recursive: true,
+    });
+  }
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
-  ipcMain.handle("ping", () => "pong");
-  ipcMain.handle("fileList", () => {
-    fileList = fs.readdirSync(__dirname, { withFileTypes: true, recursive: true });
+  ipcMain.handle("dialog:openFile", handleFileOpen);
+  ipcMain.on("show:file", (event, filePath) => {
+    shell.showItemInFolder(filePath);
   });
 
   createWindow();

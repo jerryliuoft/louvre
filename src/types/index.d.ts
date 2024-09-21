@@ -1,7 +1,14 @@
-export {};
+import { promises } from 'original-fs';
+interface FileWithType {
+  name: string;
+  parentPath: string;
+  path: string;
+}
+
+export { FileWithType };
+
 declare global {
   interface Window {
-    versions: any; // this will be your variable name
-    files: { fileList: any };
+    electronAPI: { openFile: any; showFile: any };
   }
 }
