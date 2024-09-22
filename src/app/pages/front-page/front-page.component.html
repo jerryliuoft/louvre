@@ -1,4 +1,12 @@
-<main>
-  <app-header></app-header>
-  <app-body-panel></app-body-panel>
-</main>
+<app-header
+  class="header-sticky"
+  (toggleMenuEvent)="sidenav.toggle()"
+></app-header>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side">
+    <app-display-configs />
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <app-body-panel></app-body-panel>
+  </mat-sidenav-content>
+</mat-sidenav-container>

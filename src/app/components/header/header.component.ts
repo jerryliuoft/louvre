@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
@@ -18,6 +18,8 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
+  @Output() toggleMenuEvent = new EventEmitter<void>();
+
   constructor(
     protected filesService: FilesService,
     protected displayService: DisplayService

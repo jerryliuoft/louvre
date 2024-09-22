@@ -2,6 +2,7 @@ import { Component, computed, effect, inject, signal } from '@angular/core';
 import { FilesService } from '../../services/files.service';
 import { NgOptimizedImage } from '@angular/common';
 import { DisplayService } from '../../services/display.service';
+import { MatSidenavModule } from '@angular/material/sidenav';
 
 @Component({
   selector: 'app-body-panel',
@@ -26,7 +27,11 @@ export class BodyPanelComponent {
   constructor(
     protected filesService: FilesService,
     protected displayService: DisplayService
-  ) {}
+  ) {
+    effect(() => {
+      console.log(this.displayService.imageConfigs());
+    });
+  }
 
   async openFolder() {
     this.filesService.setNewDirectory();

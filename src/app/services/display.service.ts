@@ -15,7 +15,7 @@ export class DisplayService {
   }>({
     width: 'auto',
     height: '200',
-    loading: 'auto',
+    loading: 'lazy',
   });
 
   constructor() {}

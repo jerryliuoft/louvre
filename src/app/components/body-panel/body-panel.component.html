@@ -1,9 +1,13 @@
-@for(imgsrc of currentImages(); track imgsrc) {
-<img
-  [ngSrc]="imgsrc"
-  [width]="displayService.imageConfigs().width"
-  [height]="displayService.imageConfigs().height"
-  [loading]="displayService.imageConfigs().loading"
-  (click)="showFile(imgsrc)"
-/>
-}
+<div class="flex-container flex-wrap gap-sm margin-sm">
+  @for(imgsrc of currentImages(); track imgsrc) {
+  <img
+    [ngSrc]="imgsrc"
+    [width]="displayService.imageConfigs().width"
+    [height]="displayService.imageConfigs().height"
+    [loading]="displayService.imageConfigs().loading"
+    (click)="showFile(imgsrc)"
+  />
+  }@empty {
+  <div>Pick a folder location and get started!</div>
+  }
+</div>
