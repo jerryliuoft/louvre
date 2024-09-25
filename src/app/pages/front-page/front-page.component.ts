@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { BodyPanelComponent } from '../../components/body-panel/body-panel.component';
-import { HeaderComponent } from '../../components/header/header.component';
+import { BodyPanelComponent } from './components/body-panel/body-panel.component';
+import { HeaderComponent } from './components/header/header.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
-import { DisplayConfigsComponent } from '../../components/display-configs/display-configs.component';
+import { DisplayConfigsComponent } from './components/display-configs/display-configs.component';
 
 @Component({
   selector: 'app-front-page',

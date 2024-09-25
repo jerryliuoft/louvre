@@ -1,13 +1,13 @@
-import { Component, computed, effect, inject, signal } from '@angular/core';
-import { FilesService } from '../../services/files.service';
+import { Component, computed, effect } from '@angular/core';
+import { FilesService } from '../../../../services/files.service';
 import { NgOptimizedImage } from '@angular/common';
-import { DisplayService } from '../../services/display.service';
-import { MatSidenavModule } from '@angular/material/sidenav';
+import { DisplayService } from '../../../../services/display.service';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-body-panel',
   standalone: true,
-  imports: [NgOptimizedImage],
+  imports: [NgOptimizedImage, RouterLink],
   templateUrl: './body-panel.component.html',
 })
 export class BodyPanelComponent {
@@ -35,9 +35,5 @@ export class BodyPanelComponent {
 
   async openFolder() {
     this.filesService.setNewDirectory();
-  }
-
-  showFile(imageSrc: string) {
-    window.electronAPI.showFile(imageSrc);
   }
 }

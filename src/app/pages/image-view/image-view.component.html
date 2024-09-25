@@ -1,0 +1,11 @@
+<img-header [src]="src"></img-header>
+<div
+  #imageContainer
+  class="imageContainer"
+  (wheel)="onWheel($event)"
+  (mousedown)="onMouseDown($event)"
+  (mouseup)="onMouseUp()"
+  (mousemove)="onMouseMove($event)"
+>
+  <img #mainImage [src]="src" [ngStyle]="customStyle()" />
+</div>

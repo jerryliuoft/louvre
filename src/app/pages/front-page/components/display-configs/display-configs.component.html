@@ -1,0 +1,11 @@
+<mat-list>
+  <mat-list-item>
+    <mat-slider min="20" max="2000" step="10" showTickMarks discrete>
+      <input matSliderThumb (valueChange)="updateImageHeight($event)" />
+    </mat-slider>
+  </mat-list-item>
+  <mat-divider></mat-divider>
+  <mat-list-item>Item 2</mat-list-item>
+  <mat-divider></mat-divider>
+  <mat-list-item>Item 3</mat-list-item>
+</mat-list>

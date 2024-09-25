@@ -1,18 +1,20 @@
 import { Component } from '@angular/core';
 import { MatSliderModule } from '@angular/material/slider';
-import { DisplayService } from '../../services/display.service';
+import { MatListModule } from '@angular/material/list';
+import { MatDividerModule } from '@angular/material/divider';
+import { DisplayService } from '../../../../services/display.service';
 
 @Component({
   selector: 'app-display-configs',
   standalone: true,
-  imports: [MatSliderModule],
+  imports: [MatSliderModule, MatListModule, MatDividerModule],
   templateUrl: './display-configs.component.html',
 })
 export class DisplayConfigsComponent {
-  constructor(private displayService: DisplayService) {}
+  constructor(private DisplayService: DisplayService) {}
   updateImageHeight(height: number) {
     console.log(height);
-    this.displayService.imageConfigs.update((config) => {
+    this.DisplayService.imageConfigs.update((config) => {
       config.height = height.toString();
       return { ...config };
     });
