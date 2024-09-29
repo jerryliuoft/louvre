@@ -9,7 +9,6 @@ export const routes: Routes = [
     component: FrontPageComponent,
   },
   {
-    //TODO: open images in separate window
     path: 'image/:src',
     title: 'Image',
     component: ImageViewComponent,

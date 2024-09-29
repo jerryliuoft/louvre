@@ -1,8 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+@import "@angular/material/prebuilt-themes/magenta-violet.css";
+
+$base-color: #222831;
+$base-color-alt: #31363f;
+$highlight-color: #76abae;
+$hghlight-color-alt: #eeeeee;
 
 html,
 body {
   height: 100%;
+  background-color: $base-color;
 }
 body {
   margin: 0;
@@ -11,6 +18,9 @@ body {
 
 .space-between {
   justify-content: space-between;
+}
+.justify-content-center {
+  justify-content: center;
 }
 
 .flex-container {
@@ -31,7 +41,11 @@ body {
 }
 
 .gap-sm {
-  gap: 10px;
+  gap: 8px;
+}
+
+.gap-md {
+  gap: 16px;
 }
 
 .margin-sm {
@@ -40,4 +54,16 @@ body {
 
 .full-height {
   height: 100%;
+}
+
+.radius-sm {
+  border-radius: 8px;
+}
+
+.background-color-dark {
+  background-color: $base-color;
+}
+
+.background-color-dark-alt {
+  background-color: $highlight-color;
 }

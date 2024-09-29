@@ -1,0 +1,7 @@
+@for(entry of filesService.directoryMap().entries(); track entry) {
+<div>Path: {{ entry[0] }}</div>
+@for(file of getPreview(entry[0], entry[1]); track file) {
+<img [ngSrc]="file" width="auto" height="200" />
+} }@empty{
+<div>NOTHING</div>
+}

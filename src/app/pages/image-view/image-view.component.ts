@@ -16,7 +16,7 @@ import { HeaderComponent } from './components/header/header.component';
   templateUrl: './image-view.component.html',
   styleUrl: './image-view.component.scss',
 })
-export class ImageViewComponent implements OnInit {
+export class ImageViewComponent {
   @Input({ required: true }) src = '';
   @ViewChild('mainImage') mainIamge!: ElementRef;
 
@@ -35,10 +35,6 @@ export class ImageViewComponent implements OnInit {
       this.scale +
       ')',
   });
-
-  ngOnInit(): void {
-    console.log(this.src);
-  }
 
   transform() {
     this.customStyle.set({

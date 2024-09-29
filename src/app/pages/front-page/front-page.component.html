@@ -2,11 +2,15 @@
   <mat-sidenav #sidenav mode="over">
     <app-display-configs />
   </mat-sidenav>
-  <mat-sidenav-content>
+  <mat-sidenav-content class="background-color-dark">
     <app-header
       class="header-sticky"
       (toggleMenuEvent)="sidenav.toggle()"
     ></app-header>
-    <app-body-panel></app-body-panel>
+    @if(displayService.displayType() === "item"){
+    <app-item-view></app-item-view>
+    }@else {
+    <app-directory-view></app-directory-view>
+    }
   </mat-sidenav-content>
 </mat-sidenav-container>

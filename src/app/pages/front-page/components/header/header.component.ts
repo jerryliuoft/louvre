@@ -5,6 +5,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { FilesService } from '../../../../services/files.service';
 import { DisplayService } from '../../../../services/display.service';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -14,6 +15,7 @@ import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
     MatButtonModule,
     MatIconModule,
     MatPaginatorModule,
+    RouterLink,
   ],
   templateUrl: './header.component.html',
 })

@@ -6,8 +6,8 @@ const fs = require("node:fs");
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 1000,
+    height: 800,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -15,10 +15,12 @@ const createWindow = () => {
 
   // and load the index.html of the app.
   mainWindow.loadFile("dist/gallery/browser/index.html");
+  // mainWindow.loadURL(`file://${__dirname}/dist/gallery/browser/index.html`);
 
   // Open the DevTools.
   mainWindow.webContents.openDevTools();
 };
+
 if (require("electron-squirrel-startup")) app.quit();
 
 async function handleFileOpen() {

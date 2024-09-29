@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { BodyPanelComponent } from './components/body-panel/body-panel.component';
-import { HeaderComponent } from './components/header/header.component';
+import { BodyPanelComponent } from './components/item-view/item-view.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { DisplayConfigsComponent } from './components/display-configs/display-configs.component';
+import { DisplayService } from '../../services/display.service';
+import { DirectoryViewComponent } from './components/directory-view/directory-view.component';
+import { HeaderComponent } from './components/header/header.component';
 
 @Component({
   selector: 'app-front-page',
@@ -12,8 +14,11 @@ import { DisplayConfigsComponent } from './components/display-configs/display-co
     HeaderComponent,
     MatSidenavModule,
     DisplayConfigsComponent,
+    DirectoryViewComponent,
   ],
   templateUrl: './front-page.component.html',
   styleUrl: './front-page.component.scss',
 })
-export class FrontPageComponent {}
+export class FrontPageComponent {
+  constructor(protected displayService: DisplayService) {}
+}

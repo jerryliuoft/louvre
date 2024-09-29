@@ -5,27 +5,23 @@ import { FileWithType } from '../../types/index';
 const SUPPORTED_FILETYPES = {
   jpg: true,
   png: true,
+  apng: true,
+  avif: true,
+  gif: true,
+  jpeg: true,
+  svg: true,
+  webp: true,
+  mp4: true,
+  mkv: true,
 };
 
 @Injectable({
   providedIn: 'root',
 })
 export class FilesService {
-  private files_raw = signal([]);
-  private images = computed(() => {
-    const imageFiles = this.files_raw().filter((val: FileWithType) => {
-      const parts = val.name.split('.');
-      if (parts.length > 1) {
-        return parts.at(-1)!.toLocaleLowerCase() in SUPPORTED_FILETYPES;
-      }
-      return false;
-    });
-
-    // construct the file urls
-    return imageFiles.map((src: FileWithType) => {
-      return src.path + '\\' + src.name;
-    });
-  });
+  private files_raw = signal<FileWithType[]>([]);
+  public directoryMap = signal<Map<string, string[]>>(new Map());
+  private images = signal<string[]>([]);
 
   // this contains the image in an array that should be displayed
   public imagesOrdered = computed(() => {
@@ -40,7 +36,30 @@ export class FilesService {
 
   async setNewDirectory() {
     const fileList = await window.electronAPI.openFile();
-    this.files_raw.set(Array.from(fileList));
+    const files: FileWithType[] = Array.from(fileList);
+    this.files_raw.set(files);
+
+    // Filter for supported types
+    const imageFiles = this.files_raw().filter((val: FileWithType) => {
+      const parts = val.name.split('.');
+      if (parts.length > 1) {
+        return parts.at(-1)!.toLocaleLowerCase() in SUPPORTED_FILETYPES;
+      }
+      return false;
+    });
+
+    //Populate the precomputed maps
+    const imageUrls = imageFiles.map((src: FileWithType) => {
+      return src.path + '\\' + src.name;
+    });
+    this.images.set(imageUrls);
+
+    const imageByPath = new Map<string, string[]>();
+    imageFiles.forEach((img) => {
+      const existing_images = imageByPath.get(img.path) ?? [];
+      imageByPath.set(img.path, [...existing_images, img.name]);
+    });
+    this.directoryMap.set(imageByPath);
   }
 
   async randomizeImages() {

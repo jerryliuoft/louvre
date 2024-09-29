@@ -5,7 +5,16 @@
     </mat-slider>
   </mat-list-item>
   <mat-divider></mat-divider>
-  <mat-list-item>Item 2</mat-list-item>
+  <mat-list-item>
+    <mat-button-toggle-group
+      aria-label="Display type"
+      [hideSingleSelectionIndicator]="true"
+      (change)="changeDisplayType($event)"
+    >
+      <mat-button-toggle value="item">All</mat-button-toggle>
+      <mat-button-toggle value="folder">Folder</mat-button-toggle>
+    </mat-button-toggle-group>
+  </mat-list-item>
   <mat-divider></mat-divider>
   <mat-list-item>Item 3</mat-list-item>
 </mat-list>

@@ -18,5 +18,7 @@ export class DisplayService {
     loading: 'lazy',
   });
 
+  displayType= signal<'item'|'folder'>('item');
+
   constructor() {}
 }
