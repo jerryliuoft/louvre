@@ -18,7 +18,7 @@ const createWindow = () => {
   // mainWindow.loadURL(`file://${__dirname}/dist/gallery/browser/index.html`);
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 };
 
 if (require("electron-squirrel-startup")) app.quit();

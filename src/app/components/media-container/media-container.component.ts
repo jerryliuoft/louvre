@@ -1,7 +1,13 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, computed, Input } from '@angular/core';
+import { Component, computed, input, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DisplayService } from '../../services/display.service';
+
+const SUPPORTED_VIDEO_TYPES = {
+  webm: true,
+  mp4: true,
+  mkv: true,
+};
 
 @Component({
   selector: 'app-media-container',
@@ -12,14 +18,16 @@ import { DisplayService } from '../../services/display.service';
 })
 export class MediaContainerComponent {
   height = computed(() => this.displayService.imageConfigs().height);
-  @Input() mediaSrc!: string;
+  mediaSrc = input.required<string>();
+  mediaUrlPath = computed(() => encodeURIComponent(this.mediaSrc()));
 
   constructor(private displayService: DisplayService) {}
 
   isImg(url: string) {
-    if (url.split('.')[1] != 'mp4') {
-      return true;
+    const parts = url.split('.');
+    if (parts.length > 1) {
+      return !(parts.at(-1)!.toLocaleLowerCase() in SUPPORTED_VIDEO_TYPES);
     }
-    return false;
+    return true;
   }
 }

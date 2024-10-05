@@ -1,8 +1,8 @@
-@if(isImg(mediaSrc)){
-<a [routerLink]="'/image/' + mediaSrc">
+@if(isImg(mediaSrc())){
+<a [routerLink]="'/image/' + mediaUrlPath()">
   <img
     class="radius-sm"
-    [ngSrc]="mediaSrc"
+    [ngSrc]="mediaSrc()"
     width="auto"
     [height]="height()"
     loading="lazy"
@@ -11,7 +11,7 @@
 
 } @else {
 <video [width]="height()" [height]="height()" controls>
-  <source [src]="mediaSrc" type="video/mp4" />
+  <source [src]="mediaSrc()" type="video/mp4" />
   Your browser does not support the video tag.
 </video>
 }

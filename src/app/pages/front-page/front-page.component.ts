@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, input, Input, OnInit } from '@angular/core';
 import { BodyPanelComponent } from './components/item-view/item-view.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { DisplayConfigsComponent } from './components/display-configs/display-configs.component';
@@ -28,14 +28,17 @@ export class FrontPageComponent implements OnInit {
     private filesService: FilesService,
     private route: ActivatedRoute
   ) {
-    route.paramMap.subscribe((params) => {
-      this.filesService.setNewDirectory(params.get('path') || '');
+    this.route.paramMap.subscribe((params) => {
+      const newPath = params.get('path');
+      if (newPath) {
+        this.filesService.setNewDirectory(decodeURIComponent(newPath));
+      }
     });
   }
 
   ngOnInit(): void {
     if (this.path) {
-      this.filesService.setNewDirectory(this.path);
+      this.filesService.setNewDirectory(decodeURIComponent(this.path));
     }
   }
 }

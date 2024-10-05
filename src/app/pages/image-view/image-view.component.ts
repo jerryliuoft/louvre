@@ -1,8 +1,8 @@
 import {
   Component,
+  computed,
   ElementRef,
-  Input,
-  OnInit,
+  input,
   signal,
   ViewChild,
 } from '@angular/core';
@@ -17,7 +17,9 @@ import { HeaderComponent } from './components/header/header.component';
   styleUrl: './image-view.component.scss',
 })
 export class ImageViewComponent {
-  @Input({ required: true }) src = '';
+  src = input.required<string>();
+  srcDecoded = computed(() => decodeURIComponent(this.src()));
+
   @ViewChild('mainImage') mainIamge!: ElementRef;
 
   scale = 1;

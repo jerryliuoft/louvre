@@ -12,6 +12,7 @@ const SUPPORTED_FILETYPES = {
   jpeg: true,
   svg: true,
   webp: true,
+  webm: true,
   mp4: true,
   mkv: true,
 };
@@ -21,44 +22,14 @@ const SUPPORTED_FILETYPES = {
 })
 export class FilesService {
   private files_raw = signal<FileWithType[]>([]);
-  private images = signal<string[]>([]);
-  private imagesShuffled = signal<string[]>([]);
-  public directoryMap = signal<Map<string, string[]>>(new Map());
-  private allDirectories = computed(() =>
-    Array.from(this.directoryMap().entries())
-  );
-  private directoryShuffled = signal<[string, string[]]>(['', []]);
-
-  // this contains the image in an array that should be displayed
-  public imagesOrdered = computed(() => {
-    if (this.imagesShuffled().length) {
-      return this.imagesShuffled();
-    } else {
-      return this.images();
-    }
-  });
-
-  // this contains the directory in an array to be displayed
-  public directoryOrdered = computed(() => {
-    if (this.directoryShuffled().length) {
-      return this.directoryShuffled();
-    } else {
-      return this.allDirectories();
-    }
-  });
+  public imagesOrdered = signal<string[]>([]);
+  public directoryOrdered = signal<[string, string[]][]>([]);
 
   constructor(private router: Router) {}
 
-  resetAll() {
-    this.files_raw.set([]);
-    this.directoryMap.set(new Map<string, string[]>());
-    this.images.set([]);
-    this.imagesShuffled.set([]);
-  }
-
   async pickNewDirectory() {
     const path = await window.electronAPI.searchDialog();
-    this.router.navigateByUrl('/folder/' + path);
+    this.router.navigateByUrl('/folder/' + encodeURIComponent(path));
   }
 
   async setNewDirectory(path: string) {
@@ -67,10 +38,6 @@ export class FilesService {
   }
 
   private updateFileList(fileList: any) {
-    this.resetAll();
-    console.log('updating files');
-    console.log(fileList);
-
     const files: FileWithType[] = Array.from(fileList);
     this.files_raw.set(files);
 
@@ -87,30 +54,31 @@ export class FilesService {
     const imageUrls = imageFiles.map((src: FileWithType) => {
       return src.path + '\\' + src.name;
     });
-    this.images.set(imageUrls);
+    this.imagesOrdered.set(imageUrls);
 
     const imageByPath = new Map<string, string[]>();
     imageFiles.forEach((img) => {
       const existing_images = imageByPath.get(img.path) ?? [];
       imageByPath.set(img.path, [...existing_images, img.name]);
     });
-    this.directoryMap.set(imageByPath);
+    this.directoryOrdered.set(Array.from(imageByPath.entries()));
   }
 
   randomize() {
     this.randomizeImages();
+    this.randomizeDirecotires();
   }
 
   randomizeImages() {
-    const newOrder = Array.from(this.images());
+    const newOrder = Array.from(this.imagesOrdered());
     this.shuffle(newOrder);
-    this.imagesShuffled.set(newOrder);
+    this.imagesOrdered.set(newOrder);
   }
 
   randomizeDirecotires() {
-    const newOrder = this.directoryShuffled();
+    const newOrder = Array.from(this.directoryOrdered());
     this.shuffle(newOrder);
-    this.directoryShuffled.set(newOrder);
+    this.directoryOrdered.set(newOrder);
   }
 
   // from https://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
