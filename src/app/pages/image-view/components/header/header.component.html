@@ -1,8 +1,12 @@
 <mat-toolbar class="flex-container space-between">
   <div class="flex-container align-items-center">
-    <a routerLink="/">
-      <span>Louvre</span>
-    </a>
+    <button
+      mat-icon-button
+      (click)="location.back()"
+      aria-label="Icon button to go back to front page"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
     <button
       mat-icon-button
       (click)="showFile()"

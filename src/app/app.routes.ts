@@ -5,12 +5,17 @@ import { ImageViewComponent } from './pages/image-view/image-view.component';
 export const routes: Routes = [
   {
     path: '',
-    title: 'Louve - your own gallery',
+    title: 'Louvre - your own gallery',
     component: FrontPageComponent,
   },
   {
     path: 'image/:src',
     title: 'Image',
     component: ImageViewComponent,
+  },
+  {
+    path: 'folder/:path',
+    title: 'Louvre - your own gallery',
+    component: FrontPageComponent,
   },
 ];

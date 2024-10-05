@@ -1,22 +1,16 @@
 import { Component } from '@angular/core';
 import { MatSliderModule } from '@angular/material/slider';
-import { MatListModule } from '@angular/material/list';
-import { MatDividerModule } from '@angular/material/divider';
 import { DisplayService } from '../../../../services/display.service';
 import {
   MatButtonToggleChange,
   MatButtonToggleModule,
 } from '@angular/material/button-toggle';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 @Component({
   selector: 'app-display-configs',
   standalone: true,
-  imports: [
-    MatSliderModule,
-    MatListModule,
-    MatDividerModule,
-    MatButtonToggleModule,
-  ],
+  imports: [MatSliderModule, MatButtonToggleModule, MatExpansionModule],
   templateUrl: './display-configs.component.html',
 })
 export class DisplayConfigsComponent {

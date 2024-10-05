@@ -4,13 +4,13 @@
     class="radius-sm"
     [ngSrc]="mediaSrc"
     width="auto"
-    [height]="height"
+    [height]="height()"
     loading="lazy"
   />
 </a>
 
 } @else {
-<video [width]="height" [height]="height" controls>
+<video [width]="height()" [height]="height()" controls>
   <source [src]="mediaSrc" type="video/mp4" />
   Your browser does not support the video tag.
 </video>

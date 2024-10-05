@@ -1,6 +1,7 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, Input } from '@angular/core';
+import { Component, computed, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { DisplayService } from '../../services/display.service';
 
 @Component({
   selector: 'app-media-container',
@@ -10,8 +11,10 @@ import { RouterLink } from '@angular/router';
   styleUrl: './media-container.component.scss',
 })
 export class MediaContainerComponent {
-  @Input() height!: string;
+  height = computed(() => this.displayService.imageConfigs().height);
   @Input() mediaSrc!: string;
+
+  constructor(private displayService: DisplayService) {}
 
   isImg(url: string) {
     if (url.split('.')[1] != 'mp4') {

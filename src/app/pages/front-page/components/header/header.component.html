@@ -2,8 +2,15 @@
   <div class="flex-container align-items-center">
     <button
       mat-icon-button
+      (click)="location.back()"
+      aria-label="Icon button to go back to previous page"
+    >
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    <button
+      mat-icon-button
       aria-label="Button to show side navigation"
-      (click)="this.toggleMenuEvent.emit()"
+      (click)="toggleMenuEvent.emit()"
     >
       <mat-icon>menu</mat-icon>
     </button>

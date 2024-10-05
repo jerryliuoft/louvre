@@ -1,9 +1,6 @@
 <div class="flex-container flex-wrap gap-md margin-sm justify-content-center">
   @for(mediaSrc of currentImages(); track mediaSrc) {
-  <app-media-container
-    [height]="displayService.imageConfigs().height"
-    [mediaSrc]="mediaSrc"
-  ></app-media-container>
+  <app-media-container [mediaSrc]="mediaSrc"></app-media-container>
   }@empty {
   <div>Pick a folder location and get started!</div>
   }

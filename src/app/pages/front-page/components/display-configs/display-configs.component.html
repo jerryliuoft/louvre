@@ -1,20 +1,23 @@
-<mat-list>
-  <mat-list-item>
-    <mat-slider min="20" max="2000" step="10" showTickMarks discrete>
-      <input matSliderThumb (valueChange)="updateImageHeight($event)" />
-    </mat-slider>
-  </mat-list-item>
-  <mat-divider></mat-divider>
-  <mat-list-item>
+<mat-accordion multi>
+  <mat-expansion-panel expanded>
+    <mat-expansion-panel-header>
+      <mat-panel-title> Display view</mat-panel-title>
+    </mat-expansion-panel-header>
     <mat-button-toggle-group
       aria-label="Display type"
       [hideSingleSelectionIndicator]="true"
       (change)="changeDisplayType($event)"
     >
-      <mat-button-toggle value="item">All</mat-button-toggle>
+      <mat-button-toggle [checked]="true" value="item">All</mat-button-toggle>
       <mat-button-toggle value="folder">Folder</mat-button-toggle>
     </mat-button-toggle-group>
-  </mat-list-item>
-  <mat-divider></mat-divider>
-  <mat-list-item>Item 3</mat-list-item>
-</mat-list>
+  </mat-expansion-panel>
+  <mat-expansion-panel expanded>
+    <mat-expansion-panel-header>
+      <mat-panel-title>Item size</mat-panel-title>
+      <mat-slider min="20" max="2000" step="10" showTickMarks discrete>
+        <input matSliderThumb (valueChange)="updateImageHeight($event)" />
+      </mat-slider>
+    </mat-expansion-panel-header>
+  </mat-expansion-panel>
+</mat-accordion>

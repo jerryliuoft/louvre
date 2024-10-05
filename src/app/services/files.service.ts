@@ -1,5 +1,6 @@
 import { effect, Injectable, signal, computed } from '@angular/core';
 import { FileWithType } from '../../types/index';
+import { Router } from '@angular/router';
 
 // put all types as lowercase
 const SUPPORTED_FILETYPES = {
@@ -22,7 +23,9 @@ export class FilesService {
   private files_raw = signal<FileWithType[]>([]);
   public directoryMap = signal<Map<string, string[]>>(new Map());
   private images = signal<string[]>([]);
+  private imagesShuffled = signal<string[]>([]);
 
+  constructor(private router: Router) {}
   // this contains the image in an array that should be displayed
   public imagesOrdered = computed(() => {
     if (this.imagesShuffled().length) {
@@ -32,10 +35,28 @@ export class FilesService {
     }
   });
 
-  private imagesShuffled = signal<string[]>([]);
+  resetAll() {
+    this.files_raw.set([]);
+    this.directoryMap.set(new Map<string, string[]>());
+    this.images.set([]);
+    this.imagesShuffled.set([]);
+  }
 
-  async setNewDirectory() {
-    const fileList = await window.electronAPI.openFile();
+  async pickNewDirectory() {
+    const path = await window.electronAPI.searchDialog();
+    this.router.navigateByUrl('/folder/' + path);
+  }
+
+  async setNewDirectory(path: string) {
+    const fileList = await window.electronAPI.searchFolder(path);
+    this.updateFileList(fileList);
+  }
+
+  private updateFileList(fileList: any) {
+    this.resetAll();
+    console.log('updating files');
+    console.log(fileList);
+
     const files: FileWithType[] = Array.from(fileList);
     this.files_raw.set(files);
 

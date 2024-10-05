@@ -4,7 +4,7 @@ import { Injectable, signal } from '@angular/core';
   providedIn: 'root',
 })
 export class DisplayService {
-  pageSize = signal(0); // how many images to display
+  pageSize = signal(50); // how many images to display
   pageIndex = signal(0); // current page number
 
   // configurations for the images
@@ -18,7 +18,7 @@ export class DisplayService {
     loading: 'lazy',
   });
 
-  displayType= signal<'item'|'folder'>('item');
+  displayType = signal<'item' | 'folder'>('item');
 
   constructor() {}
 }

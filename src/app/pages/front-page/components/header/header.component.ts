@@ -6,6 +6,7 @@ import { FilesService } from '../../../../services/files.service';
 import { DisplayService } from '../../../../services/display.service';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { RouterLink } from '@angular/router';
+import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -24,10 +25,11 @@ export class HeaderComponent {
 
   constructor(
     protected filesService: FilesService,
-    protected displayService: DisplayService
+    protected displayService: DisplayService,
+    protected location: Location
   ) {}
   async selectDirectory() {
-    this.filesService.setNewDirectory();
+    this.filesService.pickNewDirectory();
   }
   async randomize() {
     this.filesService.randomizeImages();

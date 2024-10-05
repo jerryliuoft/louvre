@@ -1,4 +1,4 @@
-import { Component, computed, effect } from '@angular/core';
+import { Component, computed } from '@angular/core';
 import { FilesService } from '../../../../services/files.service';
 import { NgOptimizedImage } from '@angular/common';
 import { DisplayService } from '../../../../services/display.service';
@@ -27,13 +27,9 @@ export class BodyPanelComponent {
   constructor(
     protected filesService: FilesService,
     protected displayService: DisplayService
-  ) {
-    effect(() => {
-      console.log(this.displayService.imageConfigs());
-    });
-  }
+  ) {}
 
   async openFolder() {
-    this.filesService.setNewDirectory();
+    this.filesService.pickNewDirectory();
   }
 }
