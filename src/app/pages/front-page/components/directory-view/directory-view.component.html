@@ -1,12 +1,12 @@
 <div class="padding-container">
   @for(entry of currentPage(); track entry) {
-  <span>
-    <div>Path: {{ entry[0] }}</div>
+  <div class="flex-container align-items-center">
+    <div>{{ entry[0] }}</div>
     <a mat-icon-button [routerLink]="'/folder/' + entry[0]">
       <mat-icon>folder-open</mat-icon>
     </a>
-  </span>
-  <div class="flex-container gap-md">
+  </div>
+  <div class="flex-container gap-md flex-wrap">
     @for(file of getPreview(entry[0], entry[1]); track file) {
     <app-media-container [mediaSrc]="file"></app-media-container>
     }

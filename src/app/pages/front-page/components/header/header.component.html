@@ -1,5 +1,5 @@
 <mat-toolbar class="flex-container space-between background-color-dark-alt">
-  <div class="flex-container align-items-center">
+  <div class="flex-container align-items-center gap-md">
     <button
       mat-icon-button
       (click)="location.back()"
@@ -7,15 +7,15 @@
     >
       <mat-icon>arrow_back</mat-icon>
     </button>
-    <button
-      mat-icon-button
-      aria-label="Button to show side navigation"
-      (click)="toggleMenuEvent.emit()"
-    >
-      <mat-icon>menu</mat-icon>
-    </button>
     <span>Louvre</span>
-    <span></span>
+    <mat-button-toggle-group
+      aria-label="Display type"
+      [hideSingleSelectionIndicator]="true"
+      (change)="displayService.displayType.set($event.value)"
+    >
+      <mat-button-toggle [checked]="true" value="item">All</mat-button-toggle>
+      <mat-button-toggle value="folder">Folder</mat-button-toggle>
+    </mat-button-toggle-group>
     <button
       mat-icon-button
       aria-label="Icon button to shuffle images"
@@ -31,13 +31,22 @@
       <mat-icon>folder</mat-icon>
     </button>
   </div>
-  <mat-paginator
-    (page)="handlePageEvent($event)"
-    [length]="filesService.imagesOrdered().length"
-    [pageSize]="displayService.pageSize()"
-    [pageIndex]="displayService.pageIndex()"
-    [pageSizeOptions]="[0, 20, 50, 500]"
-    aria-label="Select page"
-  >
-  </mat-paginator>
+  <div class="flex-container align-items-center">
+    <mat-paginator
+      (page)="handlePageEvent($event)"
+      [length]="filesService.imagesOrdered().length"
+      [pageSize]="displayService.pageSize()"
+      [pageIndex]="displayService.pageIndex()"
+      aria-label="Select page"
+      hidePageSize
+    >
+    </mat-paginator>
+    <button
+      mat-icon-button
+      aria-label="Button to show side navigation"
+      (click)="toggleMenuEvent.emit()"
+    >
+      <mat-icon>menu</mat-icon>
+    </button>
+  </div>
 </mat-toolbar>

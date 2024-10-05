@@ -1,29 +1,33 @@
 import { Component } from '@angular/core';
-import { MatSliderModule } from '@angular/material/slider';
 import { DisplayService } from '../../../../services/display.service';
-import {
-  MatButtonToggleChange,
-  MatButtonToggleModule,
-} from '@angular/material/button-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatRadioModule } from '@angular/material/radio';
 
 @Component({
   selector: 'app-display-configs',
   standalone: true,
-  imports: [MatSliderModule, MatButtonToggleModule, MatExpansionModule],
+  imports: [MatButtonToggleModule, MatExpansionModule, MatRadioModule],
   templateUrl: './display-configs.component.html',
 })
 export class DisplayConfigsComponent {
-  constructor(private DisplayService: DisplayService) {}
+  protected pageSizes = [0, 20, 50, 200];
+  protected imageSizes = [50, 200, 400, 1000];
+  protected previewNum = [5, 10, 15, 0];
+
+  constructor(private displayService: DisplayService) {}
   updateImageHeight(height: number) {
-    console.log(height);
-    this.DisplayService.imageConfigs.update((config) => {
+    this.displayService.imageConfigs.update((config) => {
       config.height = height.toString();
       return { ...config };
     });
   }
 
-  changeDisplayType(event: MatButtonToggleChange) {
-    this.DisplayService.displayType.set(event.value);
+  changePageSize(size: number) {
+    this.displayService.pageSize.set(size);
+  }
+
+  updatePreviewSize(size: number) {
+    this.displayService.folderPreviewSize.set(size);
   }
 }

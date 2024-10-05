@@ -21,17 +21,16 @@ import { DisplayService } from '../../../../services/display.service';
   styleUrl: './directory-view.component.scss',
 })
 export class DirectoryViewComponent {
-  private allDirectories = computed(() =>
-    Array.from(this.filesService.directoryMap().entries())
-  );
   protected currentPage = computed(() => {
     if (this.displayService.pageSize()) {
       const startingIndex =
         this.displayService.pageIndex() * this.displayService.pageSize();
       const endingIndex = startingIndex + this.displayService.pageSize();
-      return this.allDirectories().slice(startingIndex, endingIndex);
+      return this.filesService
+        .directoryOrdered()
+        .slice(startingIndex, endingIndex);
     }
-    return this.allDirectories();
+    return this.filesService.directoryOrdered();
   });
 
   constructor(
@@ -48,6 +47,9 @@ export class DirectoryViewComponent {
       return parentPath + '\\' + file;
     });
 
-    return urls.slice(0, 5);
+    if (this.displayService.folderPreviewSize()) {
+      return urls.slice(0, this.displayService.folderPreviewSize());
+    }
+    return urls;
   }
 }

@@ -1,23 +1,38 @@
 <mat-accordion multi>
   <mat-expansion-panel expanded>
     <mat-expansion-panel-header>
-      <mat-panel-title> Display view</mat-panel-title>
+      <mat-panel-title> Page size</mat-panel-title>
     </mat-expansion-panel-header>
-    <mat-button-toggle-group
-      aria-label="Display type"
-      [hideSingleSelectionIndicator]="true"
-      (change)="changeDisplayType($event)"
-    >
-      <mat-button-toggle [checked]="true" value="item">All</mat-button-toggle>
-      <mat-button-toggle value="folder">Folder</mat-button-toggle>
-    </mat-button-toggle-group>
+    <mat-radio-group (change)="changePageSize($event.value)">
+      @for ( size of pageSizes; track size) {
+      <mat-radio-button class="example-radio-button" [value]="size">{{
+        size ? size : "infinite"
+      }}</mat-radio-button>
+      }
+    </mat-radio-group>
   </mat-expansion-panel>
   <mat-expansion-panel expanded>
     <mat-expansion-panel-header>
-      <mat-panel-title>Item size</mat-panel-title>
-      <mat-slider min="20" max="2000" step="10" showTickMarks discrete>
-        <input matSliderThumb (valueChange)="updateImageHeight($event)" />
-      </mat-slider>
+      <mat-panel-title>Image size (change page to see)</mat-panel-title>
     </mat-expansion-panel-header>
+    <mat-radio-group (change)="updateImageHeight($event.value)">
+      @for ( size of imageSizes; track size) {
+      <mat-radio-button class="example-radio-button" [value]="size">{{
+        size
+      }}</mat-radio-button>
+      }
+    </mat-radio-group>
+  </mat-expansion-panel>
+  <mat-expansion-panel expanded>
+    <mat-expansion-panel-header>
+      <mat-panel-title>Folder preview size</mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-radio-group (change)="updatePreviewSize($event.value)">
+      @for ( size of previewNum; track size) {
+      <mat-radio-button class="example-radio-button" [value]="size">{{
+        size ? size : "all"
+      }}</mat-radio-button>
+      }
+    </mat-radio-group>
   </mat-expansion-panel>
 </mat-accordion>

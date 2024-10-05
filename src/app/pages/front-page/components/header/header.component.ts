@@ -7,6 +7,7 @@ import { DisplayService } from '../../../../services/display.service';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { RouterLink } from '@angular/router';
 import { Location } from '@angular/common';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-header',
@@ -17,6 +18,7 @@ import { Location } from '@angular/common';
     MatIconModule,
     MatPaginatorModule,
     RouterLink,
+    MatButtonToggleModule,
   ],
   templateUrl: './header.component.html',
 })
@@ -32,7 +34,7 @@ export class HeaderComponent {
     this.filesService.pickNewDirectory();
   }
   async randomize() {
-    this.filesService.randomizeImages();
+    this.filesService.randomize();
   }
   handlePageEvent(event: PageEvent) {
     this.displayService.pageIndex.update((prve) => event.pageIndex);
