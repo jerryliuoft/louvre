@@ -1,8 +1,8 @@
 {
   "name": "Louvre",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "ProductName": "Louvre",
-  "description": "So much art",
+  "description": "Simple photo/video browser that allows you to shuffle",
   "main": "main.js",
   "author": "Jerry Li",
   "license": "MIT",
