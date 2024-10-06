@@ -3,8 +3,11 @@
     <mat-expansion-panel-header>
       <mat-panel-title> Page size</mat-panel-title>
     </mat-expansion-panel-header>
-    <mat-radio-group (change)="changePageSize($event.value)">
-      @for ( size of pageSizes; track size) {
+    <mat-radio-group
+      (change)="changePageSize($event.value)"
+      [value]="displayService.pageSize()"
+    >
+      @for ( size of pageSizes; track size[1]) {
       <mat-radio-button class="example-radio-button" [value]="size[1]">{{
         size[0]
       }}</mat-radio-button>
@@ -17,9 +20,9 @@
     </mat-expansion-panel-header>
     <mat-radio-group
       (change)="updateImageHeight($event.value)"
-      [value]="displayService.pageSize()"
+      [value]="displayService.imageConfigs().height"
     >
-      @for ( size of imageSizes; track size) {
+      @for ( size of imageSizes; track size[1]) {
       <mat-radio-button class="example-radio-button" [value]="size[1]">{{
         size[0]
       }}</mat-radio-button>
@@ -30,7 +33,10 @@
     <mat-expansion-panel-header>
       <mat-panel-title>Folder preview size</mat-panel-title>
     </mat-expansion-panel-header>
-    <mat-radio-group (change)="updatePreviewSize($event.value)">
+    <mat-radio-group
+      (change)="updatePreviewSize($event.value)"
+      [value]="displayService.folderPreviewSize()"
+    >
       @for ( size of previewNum; track size) {
       <mat-radio-button class="example-radio-button" [value]="size">{{
         size ? size : "all"

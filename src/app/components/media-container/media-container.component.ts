@@ -8,6 +8,7 @@ const SUPPORTED_VIDEO_TYPES = {
   mp4: true,
   mkv: true,
   ogg: true,
+  mov: true,
 };
 
 @Component({

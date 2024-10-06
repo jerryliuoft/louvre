@@ -1,4 +1,4 @@
-import { Component, computed } from '@angular/core';
+import { Component, computed, effect } from '@angular/core';
 import { DisplayService } from '../../../../services/display.service';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -19,16 +19,16 @@ export class DisplayConfigsComponent {
     ['long', 200],
   ]);
   protected imageSizes = new Map([
-    ['small', 50],
-    ['medium', 200],
-    ['large', 400],
-    ['xLarge', 1000],
+    ['small', '50'],
+    ['medium', '200'],
+    ['large', '400'],
+    ['xLarge', '1000'],
   ]);
   protected previewNum = [5, 10, 15, 0];
 
   constructor(protected displayService: DisplayService) {}
 
-  updateImageHeight(height: number) {
+  updateImageHeight(height: string) {
     this.displayService.imageConfigs.update((config) => {
       config.height = height.toString();
       return { ...config };

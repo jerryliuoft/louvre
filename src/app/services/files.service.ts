@@ -20,6 +20,7 @@ export class FilesService {
     mp4: true,
     mkv: true,
     ogg: true,
+    mov: true,
   });
 
   private files_raw = signal<FileWithType[]>([]);
