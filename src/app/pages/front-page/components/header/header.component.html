@@ -11,7 +11,7 @@
     <mat-button-toggle-group
       aria-label="Display type"
       [hideSingleSelectionIndicator]="true"
-      (change)="displayService.displayType.set($event.value)"
+      (change)="setDisplayType($event.value)"
     >
       <mat-button-toggle [checked]="true" value="item">All</mat-button-toggle>
       <mat-button-toggle value="folder">Folder</mat-button-toggle>
@@ -34,7 +34,11 @@
   <div class="flex-container align-items-center">
     <mat-paginator
       (page)="handlePageEvent($event)"
-      [length]="filesService.imagesOrdered().length"
+      [length]="
+        displayService.displayType() === 'folder'
+          ? filesService.directoryOrdered().length
+          : filesService.imagesOrdered().length
+      "
       [pageSize]="displayService.pageSize()"
       [pageIndex]="displayService.pageIndex()"
       aria-label="Select page"

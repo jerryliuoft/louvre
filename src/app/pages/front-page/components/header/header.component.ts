@@ -40,4 +40,8 @@ export class HeaderComponent {
     this.displayService.pageIndex.update((prve) => event.pageIndex);
     this.displayService.pageSize.update((prev) => event.pageSize);
   }
+  setDisplayType(type: 'folder' | 'item') {
+    this.displayService.displayType.set(type);
+    this.displayService.pageIndex.set(0);
+  }
 }
