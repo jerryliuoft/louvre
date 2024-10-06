@@ -12,6 +12,8 @@
 } @else {
 <video [width]="height()" [height]="height()" controls>
   <source [src]="mediaSrc()" type="video/mp4" />
+  <source [src]="mediaSrc()" type="video/webm" />
+  <source [src]="mediaSrc()" type="video/ogg" />
   Your browser does not support the video tag.
 </video>
 }

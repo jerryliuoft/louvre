@@ -1,26 +1,27 @@
-import { effect, Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { FileWithType } from '../../types/index';
 import { Router } from '@angular/router';
-
-// put all types as lowercase
-const SUPPORTED_FILETYPES = {
-  jpg: true,
-  png: true,
-  apng: true,
-  avif: true,
-  gif: true,
-  jpeg: true,
-  svg: true,
-  webp: true,
-  webm: true,
-  mp4: true,
-  mkv: true,
-};
 
 @Injectable({
   providedIn: 'root',
 })
 export class FilesService {
+  // put all types as lowercase
+  public SUPPORTED_FILETYPES = signal({
+    jpg: true,
+    png: true,
+    apng: true,
+    avif: true,
+    gif: true,
+    jpeg: true,
+    svg: true,
+    webp: true,
+    webm: true,
+    mp4: true,
+    mkv: true,
+    ogg: true,
+  });
+
   private files_raw = signal<FileWithType[]>([]);
   public imagesOrdered = signal<string[]>([]);
   public directoryOrdered = signal<[string, string[]][]>([]);
@@ -45,7 +46,7 @@ export class FilesService {
     const imageFiles = this.files_raw().filter((val: FileWithType) => {
       const parts = val.name.split('.');
       if (parts.length > 1) {
-        return parts.at(-1)!.toLocaleLowerCase() in SUPPORTED_FILETYPES;
+        return parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES();
       }
       return false;
     });

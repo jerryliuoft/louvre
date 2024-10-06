@@ -6,8 +6,10 @@ const fs = require("node:fs");
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
+    icon: path.join(__dirname, "icon.ico"),
     width: 1000,
     height: 800,
+    autoHideMenuBar: true,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
