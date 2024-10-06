@@ -5,8 +5,8 @@
     </mat-expansion-panel-header>
     <mat-radio-group (change)="changePageSize($event.value)">
       @for ( size of pageSizes; track size) {
-      <mat-radio-button class="example-radio-button" [value]="size">{{
-        size ? size : "infinite"
+      <mat-radio-button class="example-radio-button" [value]="size[1]">{{
+        size[0]
       }}</mat-radio-button>
       }
     </mat-radio-group>
@@ -15,10 +15,13 @@
     <mat-expansion-panel-header>
       <mat-panel-title>Image size (change page to see)</mat-panel-title>
     </mat-expansion-panel-header>
-    <mat-radio-group (change)="updateImageHeight($event.value)">
+    <mat-radio-group
+      (change)="updateImageHeight($event.value)"
+      [value]="displayService.pageSize()"
+    >
       @for ( size of imageSizes; track size) {
-      <mat-radio-button class="example-radio-button" [value]="size">{{
-        size
+      <mat-radio-button class="example-radio-button" [value]="size[1]">{{
+        size[0]
       }}</mat-radio-button>
       }
     </mat-radio-group>

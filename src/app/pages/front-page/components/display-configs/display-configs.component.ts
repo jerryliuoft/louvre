@@ -12,11 +12,21 @@ import { FilesService } from '../../../../services/files.service';
   templateUrl: './display-configs.component.html',
 })
 export class DisplayConfigsComponent {
-  protected pageSizes = [0, 20, 50, 200];
-  protected imageSizes = [50, 200, 400, 1000];
+  protected pageSizes = new Map([
+    ['no limit', 0],
+    ['short', 20],
+    ['medium', 50],
+    ['long', 200],
+  ]);
+  protected imageSizes = new Map([
+    ['small', 50],
+    ['medium', 200],
+    ['large', 400],
+    ['xLarge', 1000],
+  ]);
   protected previewNum = [5, 10, 15, 0];
 
-  constructor(private displayService: DisplayService) {}
+  constructor(protected displayService: DisplayService) {}
 
   updateImageHeight(height: number) {
     this.displayService.imageConfigs.update((config) => {
