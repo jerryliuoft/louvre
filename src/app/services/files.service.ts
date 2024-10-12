@@ -26,6 +26,7 @@ export class FilesService {
   private files_raw = signal<FileWithType[]>([]);
   public imagesOrdered = signal<string[]>([]);
   public directoryOrdered = signal<[string, string[]][]>([]);
+  public isLoading = signal(false);
 
   constructor(private router: Router) {}
 
@@ -35,8 +36,10 @@ export class FilesService {
   }
 
   async setNewDirectory(path: string) {
+    this.isLoading.set(true);
     const fileList = await window.electronAPI.searchFolder(path);
     this.updateFileList(fileList);
+    this.isLoading.set(false);
   }
 
   private updateFileList(fileList: any) {
@@ -67,8 +70,10 @@ export class FilesService {
   }
 
   randomize() {
+    this.isLoading.set(true);
     this.randomizeImages();
     this.randomizeDirecotires();
+    this.isLoading.set(false);
   }
 
   randomizeImages() {

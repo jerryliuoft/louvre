@@ -24,6 +24,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 })
 export class HeaderComponent {
   @Output() toggleMenuEvent = new EventEmitter<void>();
+  @Input() currentPath = '';
 
   constructor(
     protected filesService: FilesService,
@@ -33,6 +34,10 @@ export class HeaderComponent {
   async selectDirectory() {
     this.filesService.pickNewDirectory();
   }
+  showFolder() {
+    window.electronAPI.showFile(this.currentPath);
+  }
+
   async randomize() {
     this.filesService.randomize();
   }

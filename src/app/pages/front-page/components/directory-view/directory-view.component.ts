@@ -6,6 +6,7 @@ import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DisplayService } from '../../../../services/display.service';
+import { DirectoryChipsComponent } from "../directory-chips/directory-chips.component";
 
 @Component({
   selector: 'app-directory-view',
@@ -16,7 +17,8 @@ import { DisplayService } from '../../../../services/display.service';
     RouterLink,
     MatIconModule,
     MatButtonModule,
-  ],
+    DirectoryChipsComponent
+],
   templateUrl: './directory-view.component.html',
   styleUrl: './directory-view.component.scss',
 })

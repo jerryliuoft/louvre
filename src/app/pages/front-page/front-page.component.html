@@ -6,8 +6,14 @@
     <app-header
       class="header-sticky"
       (toggleMenuEvent)="sidenav.toggle()"
+      [currentPath]="currentPath()"
     ></app-header>
-    @if(displayService.displayType() === "item"){
+    @if(filesService.isLoading()){
+    <div class="flex-container align-items-center justify-content-center">
+      <mat-spinner></mat-spinner>
+    </div>
+
+    } @if(displayService.displayType() === "item"){
     <app-item-view></app-item-view>
     }@else {
     <app-directory-view></app-directory-view>

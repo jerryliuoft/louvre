@@ -1,0 +1,12 @@
+<div class="flex-container align-items-center">
+  @for( part of parsedPaths(); track part; let last = $last, first = $first){
+  @if(first){
+  <span>{{ getChipTitle(part) }}</span
+  >}@else {
+  <a mat-icon-button [routerLink]="'/folder/' + part">
+    <mat-chip>{{ getChipTitle(part) }}</mat-chip>
+  </a>
+  } @if(!last){
+  <span>/</span>
+  } }
+</div>

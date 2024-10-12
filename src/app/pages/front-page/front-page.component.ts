@@ -1,4 +1,4 @@
-import { Component, input, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, signal } from '@angular/core';
 import { BodyPanelComponent } from './components/item-view/item-view.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { DisplayConfigsComponent } from './components/display-configs/display-configs.component';
@@ -7,6 +7,7 @@ import { DirectoryViewComponent } from './components/directory-view/directory-vi
 import { HeaderComponent } from './components/header/header.component';
 import { FilesService } from '../../services/files.service';
 import { ActivatedRoute } from '@angular/router';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @Component({
   selector: 'app-front-page',
@@ -17,21 +18,24 @@ import { ActivatedRoute } from '@angular/router';
     MatSidenavModule,
     DisplayConfigsComponent,
     DirectoryViewComponent,
+    MatProgressSpinnerModule,
   ],
   templateUrl: './front-page.component.html',
   styleUrl: './front-page.component.scss',
 })
 export class FrontPageComponent implements OnInit {
   @Input({}) path = '';
+  protected currentPath = signal('');
   constructor(
     protected displayService: DisplayService,
-    private filesService: FilesService,
+    protected filesService: FilesService,
     private route: ActivatedRoute
   ) {
     this.route.paramMap.subscribe((params) => {
       const newPath = params.get('path');
-      if (newPath) {
+      if (newPath && newPath !== this.currentPath()) {
         this.filesService.setNewDirectory(decodeURIComponent(newPath));
+        this.currentPath.set(newPath);
       }
     });
   }
@@ -39,6 +43,7 @@ export class FrontPageComponent implements OnInit {
   ngOnInit(): void {
     if (this.path) {
       this.filesService.setNewDirectory(decodeURIComponent(this.path));
+      this.currentPath.set(this.path);
     }
   }
 }
