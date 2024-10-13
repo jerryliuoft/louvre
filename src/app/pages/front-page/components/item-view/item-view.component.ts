@@ -4,11 +4,17 @@ import { NgOptimizedImage } from '@angular/common';
 import { DisplayService } from '../../../../services/display.service';
 import { RouterLink } from '@angular/router';
 import { MediaContainerComponent } from '../../../../components/media-container/media-container.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @Component({
   selector: 'app-item-view',
   standalone: true,
-  imports: [NgOptimizedImage, RouterLink, MediaContainerComponent],
+  imports: [
+    NgOptimizedImage,
+    RouterLink,
+    MediaContainerComponent,
+    MatIconModule,
+  ],
   templateUrl: './item-view.component.html',
 })
 export class BodyPanelComponent {

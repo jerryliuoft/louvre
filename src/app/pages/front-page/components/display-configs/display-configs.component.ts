@@ -14,14 +14,15 @@ import { FilesService } from '../../../../services/files.service';
 export class DisplayConfigsComponent {
   protected pageSizes = new Map([
     ['no limit', 0],
-    ['short', 20],
+    ['single', 1],
+    ['short', 10],
     ['medium', 50],
     ['long', 200],
   ]);
   protected imageSizes = new Map([
     ['small', '50'],
     ['medium', '200'],
-    ['large', '400'],
+    ['large', '500'],
     ['xLarge', '1000'],
   ]);
   protected previewNum = [5, 10, 15, 0];

@@ -2,6 +2,9 @@
   @for(mediaSrc of currentImages(); track mediaSrc) {
   <app-media-container [mediaSrc]="mediaSrc"></app-media-container>
   }@empty {
-  <div>Pick a folder location and get started!</div>
+  <div class="flex-container align-items-center">
+    Click(<mat-icon>folder</mat-icon>)icon above to pick a folder and get
+    started!
+  </div>
   }
 </div>

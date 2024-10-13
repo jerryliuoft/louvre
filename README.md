@@ -1,7 +1,7 @@
 # Louvre
 
 ![splash image](promo.jpg)
-Simple gallery app that allows you to shuffle all your images!
+Offline photo/video viewer with the ability to shuffle.
 
 ## Features
 
@@ -14,13 +14,42 @@ Simple gallery app that allows you to shuffle all your images!
 - No unknown third party scripts, only first party angular + electron forge
 - Supports: jpg, png, mp4, gif, and more
 
-## Example screencaps
+## Feature showcase
 
-![example gif](example.gif)
+### Display all images in nested folders
+
+![photoview](README/photoView.gif)
+
+### Preview folder images
+
+![folderview](README/folderview.gif)
+
+### Shuffle images shuffle folders
+
+![shuffle](README/shuffle.gif)
+
+### Pageless / infinite scrolling or paged
+
+![pageless](README/pageless.gif)
+
+### Video playback support
+
+![video](README/video.gif)
+
+### Image preview
+
+![imageview](README/imageview.gif)
+
+#### And much more
 
 ## Installation instruction
 
-Grab it from [Release](https://github.com/jerryliuoft/louvre/releases) and just double click, no install needed
+1. Grab it from [Release](https://github.com/jerryliuoft/louvre/releases)
+2. Run with administrator mode if normal mode doesn't work
+
+For mac users:
+
+Let me know if you want this, or just run the package command yourself below
 
 ## Developers note
 
