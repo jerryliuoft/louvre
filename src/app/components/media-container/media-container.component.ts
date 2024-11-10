@@ -1,7 +1,8 @@
 import { NgOptimizedImage } from '@angular/common';
-import { Component, computed, input, Input } from '@angular/core';
+import { Component, computed, effect, input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DisplayService } from '../../services/display.service';
+import { ImageViewService } from '../../services/image-view.service';
 
 const SUPPORTED_VIDEO_TYPES = {
   webm: true,
@@ -21,9 +22,13 @@ const SUPPORTED_VIDEO_TYPES = {
 export class MediaContainerComponent {
   height = computed(() => this.displayService.imageConfigs().height);
   mediaSrc = input.required<string>();
-  mediaUrlPath = computed(() => encodeURIComponent(this.mediaSrc()));
+  // Uncomment this once we solved the problem with electron not able to render image on new window
+  // mediaUrlPath = computed(() => encodeURIComponent(this.mediaSrc()));
 
-  constructor(private displayService: DisplayService) {}
+  constructor(
+    private displayService: DisplayService,
+    protected imageViewService: ImageViewService
+  ) {}
 
   isImg(url: string) {
     const parts = url.split('.');

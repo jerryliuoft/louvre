@@ -25,7 +25,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 })
 export class FrontPageComponent implements OnInit {
   @Input({}) path = '';
-  protected currentPath = signal('');
   constructor(
     protected displayService: DisplayService,
     protected filesService: FilesService,
@@ -33,9 +32,8 @@ export class FrontPageComponent implements OnInit {
   ) {
     this.route.paramMap.subscribe((params) => {
       const newPath = params.get('path');
-      if (newPath && newPath !== this.currentPath()) {
+      if (newPath && newPath !== 'undefined') {
         this.filesService.setNewDirectory(decodeURIComponent(newPath));
-        this.currentPath.set(newPath);
       }
     });
   }
@@ -43,7 +41,6 @@ export class FrontPageComponent implements OnInit {
   ngOnInit(): void {
     if (this.path) {
       this.filesService.setNewDirectory(decodeURIComponent(this.path));
-      this.currentPath.set(this.path);
     }
   }
 }

@@ -1,13 +1,15 @@
 import {
   Component,
-  computed,
   ElementRef,
+  inject,
   input,
   signal,
   ViewChild,
 } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
+import { MatDialogRef } from '@angular/material/dialog';
+import { ModalComponent } from './modal/modal.component';
 
 @Component({
   selector: 'app-image-view',
@@ -18,7 +20,7 @@ import { HeaderComponent } from './components/header/header.component';
 })
 export class ImageViewComponent {
   src = input.required<string>();
-  srcDecoded = computed(() => decodeURIComponent(this.src()));
+  dialogRef = inject(MatDialogRef<ModalComponent>);
 
   @ViewChild('mainImage') mainIamge!: ElementRef;
 
@@ -79,5 +81,9 @@ export class ImageViewComponent {
     this.pointX = e.clientX - xs * this.scale;
     this.pointY = e.clientY - ys * this.scale;
     this.transform();
+  }
+
+  onKeyDown(e: KeyboardEvent) {
+    this.dialogRef.close();
   }
 }

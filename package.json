@@ -1,6 +1,6 @@
 {
   "name": "Louvre",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "ProductName": "Louvre",
   "description": "Simple photo/video browser that allows you to shuffle",
   "main": "main.js",

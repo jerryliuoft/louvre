@@ -1,4 +1,4 @@
-<img-header [src]="srcDecoded()"></img-header>
+<img-header [src]="src()"></img-header>
 <div
   #imageContainer
   class="imageContainer"
@@ -6,6 +6,7 @@
   (mousedown)="onMouseDown($event)"
   (mouseup)="onMouseUp()"
   (mousemove)="onMouseMove($event)"
+  (keydown)="onKeyDown($event)"
 >
-  <img #mainImage [src]="srcDecoded()" [ngStyle]="customStyle()" />
+  <img #mainImage [src]="src()" [ngStyle]="customStyle()" />
 </div>

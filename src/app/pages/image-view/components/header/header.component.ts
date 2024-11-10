@@ -1,10 +1,12 @@
-import { Component, Input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterLink } from '@angular/router';
 import { Location } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialogRef } from '@angular/material/dialog';
+import { ModalComponent } from '../../modal/modal.component';
 
 @Component({
   selector: 'img-header',
@@ -19,11 +21,10 @@ import { MatTooltipModule } from '@angular/material/tooltip';
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
-  @Input({ required: true }) src = '';
-
-  constructor(protected location: Location) {}
+  src = input.required();
+  dialogRef = inject(MatDialogRef<ModalComponent>);
 
   showFile() {
-    window.electronAPI.showFile(this.src);
+    window.electronAPI.showFile(this.src());
   }
 }

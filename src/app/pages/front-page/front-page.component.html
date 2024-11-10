@@ -6,7 +6,6 @@
     <app-header
       class="header-sticky"
       (toggleMenuEvent)="sidenav.toggle()"
-      [currentPath]="currentPath()"
     ></app-header>
     @if(filesService.isLoading()){
     <div class="flex-container align-items-center justify-content-center">

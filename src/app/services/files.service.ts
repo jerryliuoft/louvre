@@ -23,6 +23,7 @@ export class FilesService {
     mov: true,
   });
 
+  public currentPath = signal<string>('undefined');
   private files_raw = signal<FileWithType[]>([]);
   public imagesOrdered = signal<string[]>([]);
   public directoryOrdered = signal<[string, string[]][]>([]);
@@ -36,6 +37,11 @@ export class FilesService {
   }
 
   async setNewDirectory(path: string) {
+    if (path !== this.currentPath()) {
+      this.currentPath.set(path);
+    } else {
+      return;
+    }
     this.isLoading.set(true);
     const fileList = await window.electronAPI.searchFolder(path);
     this.updateFileList(fileList);

@@ -1,14 +1,13 @@
 @if(isImg(mediaSrc())){
-<a [routerLink]="'/image/' + mediaUrlPath()">
-  <img
-    class="radius-sm"
-    [ngSrc]="mediaSrc()"
-    width="auto"
-    [height]="height()"
-    loading="lazy"
-  />
-</a>
-
+<img
+  disableOptimizedSrcset
+  (click)="imageViewService.openDialog(mediaSrc())"
+  class="radius-sm pointer"
+  [ngSrc]="mediaSrc()"
+  width="auto"
+  [height]="height()"
+  loading="lazy"
+/>
 } @else {
 <video [width]="height()" [height]="height()" controls>
   <source [src]="mediaSrc()" type="video/mp4" />
