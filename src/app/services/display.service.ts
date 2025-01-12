@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, effect } from '@angular/core';
 
 @Injectable({
   providedIn: 'root',
@@ -19,7 +19,24 @@ export class DisplayService {
     loading: 'lazy',
   });
 
-  displayType = signal<'item' | 'folder'>('item');
+  displayType = signal<'item' | 'folder'>('folder');
 
-  constructor() {}
+  constructor() {
+    effect(() => {
+      const config = {
+        imageConfigs: this.imageConfigs(),
+        pageSize: this.pageSize(),
+        folderPreviewSize: this.folderPreviewSize(),
+      };
+      localStorage.setItem('displayService', JSON.stringify(config));
+    });
+
+    const prevJSONConfig = localStorage.getItem('displayService');
+    if (prevJSONConfig) {
+      const config = JSON.parse(prevJSONConfig);
+      this.pageSize.set(config.pageSize);
+      this.folderPreviewSize.set(config.folderPreviewSize);
+      this.imageConfigs.set(config.imageConfigs);
+    }
+  }
 }

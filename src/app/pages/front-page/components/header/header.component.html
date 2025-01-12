@@ -13,8 +13,16 @@
       [hideSingleSelectionIndicator]="true"
       (change)="setDisplayType($event.value)"
     >
-      <mat-button-toggle [checked]="true" value="item">All</mat-button-toggle>
-      <mat-button-toggle value="folder">Folder</mat-button-toggle>
+      <mat-button-toggle
+        [checked]="displayService.displayType() === 'folder'"
+        value="folder"
+        >Folder</mat-button-toggle
+      >
+      <mat-button-toggle
+        [checked]="displayService.displayType() === 'item'"
+        value="item"
+        >All</mat-button-toggle
+      >
     </mat-button-toggle-group>
     <button
       mat-icon-button
