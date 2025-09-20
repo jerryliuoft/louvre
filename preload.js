@@ -10,4 +10,6 @@ contextBridge.exposeInMainWorld("electronAPI", {
     ipcRenderer.send("show:file", filePath),
   showFolder: (/** @type {string} */ folderPath) =>
     ipcRenderer.send("show:folder", folderPath),
+  deleteFile: (/** @type {string} */ filePath) =>
+    ipcRenderer.invoke("delete:file", filePath),
 });

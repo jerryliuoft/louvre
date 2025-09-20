@@ -5,7 +5,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { FilesService } from '../../../../services/files.service';
 import { DisplayService } from '../../../../services/display.service';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { RouterLink } from '@angular/router';
 import { Location } from '@angular/common';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
@@ -17,7 +16,6 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatButtonModule,
     MatIconModule,
     MatPaginatorModule,
-    RouterLink,
     MatButtonToggleModule,
   ],
   templateUrl: './header.component.html',
@@ -33,10 +31,6 @@ export class HeaderComponent {
   async selectDirectory() {
     this.filesService.pickNewDirectory();
   }
-  showCurrentFolder() {
-    window.electronAPI.showFile(this.filesService.currentPath());
-  }
-
   async randomize() {
     this.filesService.randomize();
   }

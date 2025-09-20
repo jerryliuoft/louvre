@@ -1,18 +1,33 @@
-@if(isImg(mediaSrc())){
-<img
-  disableOptimizedSrcset
-  (click)="imageViewService.openDialog(mediaSrc())"
-  class="radius-sm pointer"
-  [ngSrc]="mediaSrc()"
-  width="auto"
-  [height]="height()"
-  loading="lazy"
-/>
-} @else {
-<video [width]="height()" [height]="height()" controls>
-  <source [src]="mediaSrc()" type="video/mp4" />
-  <source [src]="mediaSrc()" type="video/webm" />
-  <source [src]="mediaSrc()" type="video/ogg" />
-  Your browser does not support the video tag.
-</video>
+@if(isVisible()) {
+<div
+  class="media-container"
+  (mouseenter)="showButton.set(true)"
+  (mouseleave)="showButton.set(false)"
+>
+  @if(isImg(mediaSrc())) {
+  <img
+    disableOptimizedSrcset
+    (click)="imageViewService.openDialog(mediaSrc())"
+    class="radius-sm pointer"
+    [ngSrc]="mediaSrc()"
+    width="auto"
+    [height]="height()"
+    loading="lazy"
+  />
+  } @else {
+  <video [width]="height()" [height]="height()" controls>
+    <source [src]="mediaSrc()" type="video/mp4" />
+    <source [src]="mediaSrc()" type="video/webm" />
+    <source [src]="mediaSrc()" type="video/ogg" />
+    Your browser does not support the video tag.
+  </video>
+  } @if(showButton()) {
+  <button class="show-file-button" (click)="showFile()">
+    <mat-icon>image_search</mat-icon>
+  </button>
+  <button class="delete-file-button" (click)="deleteFile()">
+    <mat-icon>delete</mat-icon>
+  </button>
+  }
+</div>
 }

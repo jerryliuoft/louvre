@@ -41,6 +41,15 @@ async function handlePathSearch(filePath) {
   });
 }
 
+async function handleFileDelete(filePath) {
+  try {
+    fs.unlinkSync(filePath);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+}
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -56,6 +65,9 @@ app.whenReady().then(() => {
     const res = handlePathSearch(folderPath);
     return res;
   });
+  ipcMain.handle("delete:file", (event, filePath) =>
+    handleFileDelete(filePath)
+  );
 
   createWindow();
 

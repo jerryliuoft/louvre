@@ -9,6 +9,12 @@ export { FileWithType };
 
 declare global {
   interface Window {
-    electronAPI: { searchDialog: any; searchFolder: any; showFile: any; showFolder: any };
+    electronAPI: {
+      searchDialog: any;
+      searchFolder: any;
+      showFile: any;
+      showFolder: any;
+      deleteFile: any;
+    };
   }
 }
