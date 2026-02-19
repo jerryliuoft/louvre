@@ -1,5 +1,5 @@
 import { Component, computed, input, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+
 import { DisplayService } from '../../services/display.service';
 import { ImageViewService } from '../../services/image-view.service';
 import { MatIconModule } from '@angular/material/icon';
@@ -17,7 +17,7 @@ const SUPPORTED_VIDEO_TYPES = {
 @Component({
   selector: 'app-media-container',
   standalone: true,
-  imports: [RouterLink, MatIconModule],
+  imports: [MatIconModule],
   templateUrl: './media-container.component.html',
   styleUrl: './media-container.component.scss',
 })

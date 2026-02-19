@@ -1,8 +1,8 @@
 import { Component, computed, effect, signal } from '@angular/core';
-import { NgOptimizedImage } from '@angular/common';
+
 import { FilesService } from '../../../../services/files.service';
 import { MediaContainerComponent } from '../../../../components/media-container/media-container.component';
-import { RouterLink } from '@angular/router';
+
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DisplayService } from '../../../../services/display.service';
@@ -13,9 +13,7 @@ import { FileWithType } from '../../../../models/file.model';
   selector: 'app-directory-view',
   standalone: true,
   imports: [
-    NgOptimizedImage,
     MediaContainerComponent,
-    RouterLink,
     MatIconModule,
     MatButtonModule,
     DirectoryChipsComponent
