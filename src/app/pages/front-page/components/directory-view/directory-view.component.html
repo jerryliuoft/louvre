@@ -4,8 +4,8 @@
     <app-directory-chips [path]="entry[0]"></app-directory-chips>
   </div>
   <div class="flex-container gap-md flex-wrap">
-    @for(file of getPreview(entry[0], entry[1]); track file) {
-    <app-media-container [mediaSrc]="file"></app-media-container>
+    @for(file of getPreview(entry[0], entry[1]); track file.url) {
+    <app-media-container [file]="file"></app-media-container>
     }
   </div>
   }@empty{

@@ -25,6 +25,6 @@ export class HeaderComponent {
   dialogRef = inject(MatDialogRef<ModalComponent>);
 
   showFile() {
-    window.electronAPI.showFile(this.src());
+    console.warn('Show file not supported in PWA');
   }
 }

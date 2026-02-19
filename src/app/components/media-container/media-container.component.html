@@ -4,21 +4,20 @@
   (mouseenter)="showButton.set(true)"
   (mouseleave)="showButton.set(false)"
 >
-  @if(isImg(mediaSrc())) {
+  @if(isImg()) {
   <img
-    disableOptimizedSrcset
-    (click)="imageViewService.openDialog(mediaSrc())"
+    (click)="imageViewService.openDialog(file().url!)"
     class="radius-sm pointer"
-    [ngSrc]="mediaSrc()"
+    [src]="file().url!"
     width="auto"
     [height]="height()"
     loading="lazy"
   />
   } @else {
   <video [width]="height()" [height]="height()" controls>
-    <source [src]="mediaSrc()" type="video/mp4" />
-    <source [src]="mediaSrc()" type="video/webm" />
-    <source [src]="mediaSrc()" type="video/ogg" />
+    <source [src]="file().url!" type="video/mp4" />
+    <source [src]="file().url!" type="video/webm" />
+    <source [src]="file().url!" type="video/ogg" />
     Your browser does not support the video tag.
   </video>
   } @if(showButton()) {

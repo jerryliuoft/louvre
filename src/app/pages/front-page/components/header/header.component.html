@@ -11,18 +11,11 @@
     <mat-button-toggle-group
       aria-label="Display type"
       [hideSingleSelectionIndicator]="true"
+      [value]="displayService.displayType()"
       (change)="setDisplayType($event.value)"
     >
-      <mat-button-toggle
-        [checked]="displayService.displayType() === 'folder'"
-        value="folder"
-        >Folder</mat-button-toggle
-      >
-      <mat-button-toggle
-        [checked]="displayService.displayType() === 'item'"
-        value="item"
-        >All</mat-button-toggle
-      >
+      <mat-button-toggle value="folder">Folder</mat-button-toggle>
+      <mat-button-toggle value="item">All</mat-button-toggle>
     </mat-button-toggle-group>
     <button
       mat-icon-button

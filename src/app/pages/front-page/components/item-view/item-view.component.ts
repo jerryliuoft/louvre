@@ -10,8 +10,6 @@ import { MatIconModule } from '@angular/material/icon';
   selector: 'app-item-view',
   standalone: true,
   imports: [
-    NgOptimizedImage,
-    RouterLink,
     MediaContainerComponent,
     MatIconModule,
   ],

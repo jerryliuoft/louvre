@@ -11,7 +11,7 @@ Offline photo/video viewer with the ability to shuffle.
 - Parse nested folders, and show images inside each folder
 - Pageless scrolling
 - Show image on computer
-- No unknown third party scripts, only first party angular + electron forge
+- No unknown third party scripts, only first party Angular + PWA File System Access API
 - Supports: jpg, png, mp4, gif, and more
 
 ## Feature showcase

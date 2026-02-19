@@ -35,7 +35,7 @@ export class HeaderComponent {
     this.filesService.randomize();
   }
   handlePageEvent(event: PageEvent) {
-    this.displayService.pageIndex.update((prve) => event.pageIndex);
+    this.displayService.pageIndex.update((prev) => event.pageIndex);
     this.displayService.pageSize.update((prev) => event.pageSize);
   }
   setDisplayType(type: 'folder' | 'item') {

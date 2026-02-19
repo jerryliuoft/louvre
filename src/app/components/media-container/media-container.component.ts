@@ -1,9 +1,10 @@
-import { NgOptimizedImage } from '@angular/common';
-import { Component, computed, effect, input, signal } from '@angular/core';
+import { Component, computed, input, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { DisplayService } from '../../services/display.service';
 import { ImageViewService } from '../../services/image-view.service';
 import { MatIconModule } from '@angular/material/icon';
+import { FilesService } from '../../services/files.service';
+import { FileWithType } from '../../models/file.model';
 
 const SUPPORTED_VIDEO_TYPES = {
   webm: true,
@@ -16,23 +17,24 @@ const SUPPORTED_VIDEO_TYPES = {
 @Component({
   selector: 'app-media-container',
   standalone: true,
-  imports: [NgOptimizedImage, RouterLink, MatIconModule],
+  imports: [RouterLink, MatIconModule],
   templateUrl: './media-container.component.html',
   styleUrl: './media-container.component.scss',
 })
 export class MediaContainerComponent {
   height = computed(() => this.displayService.imageConfigs().height);
-  mediaSrc = input.required<string>();
+  file = input.required<FileWithType>();
   showButton = signal(false);
   isVisible = signal(true);
 
   constructor(
     private displayService: DisplayService,
-    protected imageViewService: ImageViewService
+    protected imageViewService: ImageViewService,
+    private filesService: FilesService
   ) {}
 
-  isImg(url: string) {
-    const parts = url.split('.');
+  isImg() {
+    const parts = this.file().name.split('.');
     if (parts.length > 1) {
       return !(parts.at(-1)!.toLocaleLowerCase() in SUPPORTED_VIDEO_TYPES);
     }
@@ -40,11 +42,12 @@ export class MediaContainerComponent {
   }
 
   showFile() {
-    window.electronAPI.showFile(this.mediaSrc());
+    // Not supported in PWA
+    console.warn('Show file in explorer not supported in PWA');
   }
 
-  deleteFile() {
-    window.electronAPI.deleteFile(this.mediaSrc());
+  async deleteFile() {
+    await this.filesService.deleteFile(this.file());
     this.isVisible.set(false);
   }
 }

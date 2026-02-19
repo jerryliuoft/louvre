@@ -1,6 +1,7 @@
 import { Injectable, signal } from '@angular/core';
-import { FileWithType } from '../../types/index';
+import { FileWithType } from '../models/file.model';
 import { Router } from '@angular/router';
+import { FileSystemService } from './file-system.service';
 
 @Injectable({
   providedIn: 'root',
@@ -25,67 +26,122 @@ export class FilesService {
 
   public currentPath = signal<string>('undefined');
   private files_raw = signal<FileWithType[]>([]);
-  public imagesOrdered = signal<string[]>([]);
-  public directoryOrdered = signal<[string, string[]][]>([]);
+  public imagesOrdered = signal<FileWithType[]>([]);
+  public directoryOrdered = signal<[string, FileWithType[]][]>([]);
   public isLoading = signal(false);
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private fileSystemService: FileSystemService
+  ) {}
 
   async pickNewDirectory() {
-    const path = await window.electronAPI.searchDialog();
-    this.router.navigateByUrl('/folder/' + encodeURIComponent(path));
-  }
-
-  async setNewDirectory(path: string) {
-    if (path !== this.currentPath()) {
-      this.currentPath.set(path);
-    } else {
-      return;
-    }
     this.isLoading.set(true);
-    const fileList = await window.electronAPI.searchFolder(path);
-    this.updateFileList(fileList);
-    this.isLoading.set(false);
+    try {
+      const handle = await this.fileSystemService.openDirectory();
+      this.currentPath.set(handle.name);
+      await this.loadDirectory(handle);
+      this.router.navigateByUrl('/folder/' + encodeURIComponent(handle.name));
+    } catch (e) {
+      console.error('Error picking directory', e);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
-  private updateFileList(fileList: any) {
-    const files: FileWithType[] = Array.from(fileList);
+  // Not used in PWA flow immediately, but maybe for restoring session?
+  setNewDirectory(path: string) {
+    // In PWA, we can't just "set" a path string to open it.
+    // We need a handle. If this is called from URL param, we might not have permission.
+    // For now, we rely on pickNewDirectory to set everything up.
+    // If the app reloads on /folder/foo, we might be stuck without a handle.
+    // We'd need IndexedDB to persist handles.
+    console.debug('setNewDirectory not fully supported without persistent handles');
+  }
+
+  private async loadDirectory(dirHandle: FileSystemDirectoryHandle) {
+    const files: FileWithType[] = [];
+    
+    // Revoke old URLs to avoid memory leaks
+    this.files_raw().forEach(f => {
+      if (f.url) URL.revokeObjectURL(f.url);
+    });
+
+    for await (const entry of this.fileSystemService.readDirectory(dirHandle)) {
+      const parts = entry.handle.name.split('.');
+      if (parts.length > 1 && parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES()) {
+        const file = await entry.handle.getFile();
+        const url = URL.createObjectURL(file);
+        files.push({
+          name: entry.handle.name,
+          path: entry.path, // relative path including filename
+          handle: entry.handle,
+          parentHandle: entry.parentHandle,
+          url: url
+        });
+      }
+    }
+
+    this.updateFileList(files);
+  }
+
+  private updateFileList(files: FileWithType[]) {
     this.files_raw.set(files);
 
-    // Filter for supported types
-    const imageFiles = this.files_raw().filter((val: FileWithType) => {
-      const parts = val.name.split('.');
-      if (parts.length > 1) {
-        return parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES();
-      }
-      return false;
-    });
-
     //Populate the precomputed maps
-    const imageUrls = imageFiles.map((src: FileWithType) => {
-      return src.path + '\\' + src.name;
-    });
-    this.imagesOrdered.set(imageUrls);
+    this.imagesOrdered.set(files);
 
-    const imageByPath = new Map<string, string[]>();
-    imageFiles.forEach((img) => {
-      const existing_images = imageByPath.get(img.path) ?? [];
-      imageByPath.set(img.path, [...existing_images, img.name]);
+    const imageByPath = new Map<string, FileWithType[]>();
+    files.forEach((img) => {
+      // Extract directory path from relative path
+      // entry.path is like "folder/file.jpg" or "file.jpg"
+      const lastSlash = img.path.lastIndexOf('/');
+      const parentDir = lastSlash > -1 ? img.path.substring(0, lastSlash) : '/';
+      
+      const existing_images = imageByPath.get(parentDir) ?? [];
+      imageByPath.set(parentDir, [...existing_images, img]);
     });
     this.directoryOrdered.set(Array.from(imageByPath.entries()));
   }
 
   randomize() {
     this.isLoading.set(true);
-    this.randomizeImages();
-    this.randomizeDirecotires();
-    this.isLoading.set(false);
+    // Timeout to yield UI thread
+    setTimeout(() => {
+        this.randomizeImages();
+        this.randomizeDirecotires();
+        this.isLoading.set(false);
+    }, 0);
   }
 
   randomizeImages() {
     const newOrder = Array.from(this.imagesOrdered());
     this.shuffle(newOrder);
     this.imagesOrdered.set(newOrder);
+  }
+
+  async deleteFile(file: FileWithType) {
+    if (!file.parentHandle || !file.name) {
+      console.error('Cannot delete file without parent handle and name');
+      return;
+    }
+    try {
+        await file.parentHandle.removeEntry(file.name);
+        // Update state
+        const remaining = this.files_raw().filter(f => f !== file);
+        this.updateFileList(remaining);
+        // Revoke URL
+        if(file.url) URL.revokeObjectURL(file.url);
+    } catch (e) {
+        console.error('Failed to delete file', e);
+    }
+  }
+
+  async deleteFileByUrl(url: string) {
+    const file = this.files_raw().find(f => f.url === url);
+    if (file) {
+      await this.deleteFile(file);
+    }
   }
 
   randomizeDirecotires() {

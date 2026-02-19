@@ -7,6 +7,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { DisplayService } from '../../../../services/display.service';
 import { DirectoryChipsComponent } from "../directory-chips/directory-chips.component";
+import { FileWithType } from '../../../../models/file.model';
 
 @Component({
   selector: 'app-directory-view',
@@ -44,14 +45,10 @@ export class DirectoryViewComponent {
     this.filesService.pickNewDirectory();
   }
 
-  getPreview(parentPath: string, files: string[]) {
-    const urls = files.map((file) => {
-      return parentPath + '\\' + file;
-    });
-
+  getPreview(parentPath: string, files: FileWithType[]) {
     if (this.displayService.folderPreviewSize()) {
-      return urls.slice(0, this.displayService.folderPreviewSize());
+      return files.slice(0, this.displayService.folderPreviewSize());
     }
-    return urls;
+    return files;
   }
 }
