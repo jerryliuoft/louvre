@@ -27,6 +27,7 @@ export class FilesService {
   public currentPath = signal<string>('undefined');
   public subPathFilter = signal<string>('');
   private files_raw = signal<FileWithType[]>([]);
+  public files_original = signal<FileWithType[]>([]);
   public imagesOrdered = computed(() => {
     const filter = this.subPathFilter();
     const raw_files = this.files_raw();
@@ -84,7 +85,7 @@ export class FilesService {
     const files: FileWithType[] = [];
     
     // Revoke old URLs to avoid memory leaks
-    this.files_raw().forEach(f => {
+    this.files_raw().forEach((f: FileWithType) => {
       if (f.url) URL.revokeObjectURL(f.url);
     });
 
@@ -103,6 +104,7 @@ export class FilesService {
       }
     }
 
+    this.files_original.set([...files]);
     this.updateFileList(files);
   }
 
@@ -151,6 +153,7 @@ export class FilesService {
         // Update state
         const remaining = this.files_raw().filter(f => f !== file);
         this.updateFileList(remaining);
+        this.files_original.update((original: FileWithType[]) => original.filter((f: FileWithType) => f !== file));
         // Revoke URL
         if(file.url) URL.revokeObjectURL(file.url);
     } catch (e) {

@@ -33,3 +33,46 @@
 .next-button {
   right: 20px;
 }
+
+.filmstrip {
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+  height: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+
+  .filmstrip-item {
+    height: 60px;
+    width: auto;
+    max-width: 100px;
+    cursor: pointer;
+    border-radius: 4px;
+    overflow: hidden;
+    opacity: 0.5;
+    transition: opacity 0.2s, transform 0.2s;
+    border: 2px solid transparent;
+
+    img, video {
+      height: 100%;
+      width: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    &:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
+    }
+
+    &.active {
+      opacity: 1;
+      border-color: white;
+      transform: scale(1.1);
+    }
+  }
+}

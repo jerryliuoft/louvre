@@ -13,3 +13,19 @@
     <mat-icon>chevron_right</mat-icon>
   </button>
 }
+
+<div class="filmstrip">
+  @for (preview of filmstripWindow; track preview.url) {
+    <div 
+      class="filmstrip-item" 
+      [ngClass]="{'active': preview.url === currentFile()?.url}"
+      (click)="currentFile.set(preview)">
+      
+      @if (isVideo(preview)) {
+        <video [src]="preview.url!" muted></video>
+      } @else {
+        <img [src]="preview.url!" />
+      }
+    </div>
+  }
+</div>
