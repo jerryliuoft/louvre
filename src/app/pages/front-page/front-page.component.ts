@@ -33,14 +33,29 @@ export class FrontPageComponent implements OnInit {
     this.route.paramMap.subscribe((params) => {
       const newPath = params.get('path');
       if (newPath && newPath !== 'undefined') {
-        this.filesService.setNewDirectory(decodeURIComponent(newPath));
+        const decoded = decodeURIComponent(newPath);
+        this.filesService.setNewDirectory(decoded);
+        
+        // Only switch to 'item' mode if it's a subfolder, NOT the root folder.
+        if (decoded !== this.filesService.currentPath()) {
+           this.displayService.displayType.set('item');
+        } else {
+           // We keep the current view, but normally on root you might want 'folder'
+           this.displayService.displayType.set('folder'); 
+        }
       }
     });
   }
 
   ngOnInit(): void {
     if (this.path) {
-      this.filesService.setNewDirectory(decodeURIComponent(this.path));
+      const decoded = decodeURIComponent(this.path);
+      this.filesService.setNewDirectory(decoded);
+      if (decoded !== this.filesService.currentPath()) {
+        this.displayService.displayType.set('item');
+      } else {
+        this.displayService.displayType.set('folder');
+      }
     }
   }
 }

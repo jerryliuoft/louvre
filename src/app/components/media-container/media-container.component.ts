@@ -24,8 +24,6 @@ const SUPPORTED_VIDEO_TYPES = {
 export class MediaContainerComponent {
   height = computed(() => this.displayService.imageConfigs().height);
   file = input.required<FileWithType>();
-  showButton = signal(false);
-  isVisible = signal(true);
 
   constructor(
     private displayService: DisplayService,
@@ -39,15 +37,5 @@ export class MediaContainerComponent {
       return !(parts.at(-1)!.toLocaleLowerCase() in SUPPORTED_VIDEO_TYPES);
     }
     return true;
-  }
-
-  showFile() {
-    // Not supported in PWA
-    console.warn('Show file in explorer not supported in PWA');
-  }
-
-  async deleteFile() {
-    await this.filesService.deleteFile(this.file());
-    this.isVisible.set(false);
   }
 }

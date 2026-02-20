@@ -1,9 +1,4 @@
-@if(isVisible()) {
-<div
-  class="media-container"
-  (mouseenter)="showButton.set(true)"
-  (mouseleave)="showButton.set(false)"
->
+<div class="media-container">
   @if(isImg()) {
   <img
     (click)="imageViewService.openDialog(file().url!)"
@@ -20,13 +15,5 @@
     <source [src]="file().url!" type="video/ogg" />
     Your browser does not support the video tag.
   </video>
-  } @if(showButton()) {
-  <button class="show-file-button" (click)="showFile()">
-    <mat-icon>image_search</mat-icon>
-  </button>
-  <button class="delete-file-button" (click)="deleteFile()">
-    <mat-icon>delete</mat-icon>
-  </button>
   }
 </div>
-}

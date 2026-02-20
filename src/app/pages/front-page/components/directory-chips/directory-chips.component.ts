@@ -17,7 +17,7 @@ export class DirectoryChipsComponent {
     const cur_path = this.path();
     const paths = [];
     let i = 1;
-    while ((i = cur_path.indexOf('\\', i) + 1)) {
+    while ((i = cur_path.indexOf('/', i) + 1)) {
       paths.push(cur_path.substring(0, i - 1));
     }
     paths.push(cur_path);
@@ -26,6 +26,10 @@ export class DirectoryChipsComponent {
 
   getChipTitle(folder_path: string) {
     // we only need to display the last part of the path so just pop it out;
-    return folder_path.split('\\').pop();
+    return folder_path.split('/').pop();
+  }
+
+  encodePath(folder_path: string) {
+    return encodeURIComponent(folder_path);
   }
 }

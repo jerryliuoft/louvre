@@ -28,10 +28,10 @@ export class DirectoryViewComponent {
         this.displayService.pageIndex() * this.displayService.pageSize();
       const endingIndex = startingIndex + this.displayService.pageSize();
       return this.filesService
-        .directoryOrdered()
+        .displayedDirectories()
         .slice(startingIndex, endingIndex);
     }
-    return this.filesService.directoryOrdered();
+    return this.filesService.displayedDirectories();
   });
 
   constructor(

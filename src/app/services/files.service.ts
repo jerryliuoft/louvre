@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, signal, computed } from '@angular/core';
 import { FileWithType } from '../models/file.model';
 import { Router } from '@angular/router';
 import { FileSystemService } from './file-system.service';
@@ -25,9 +25,30 @@ export class FilesService {
   });
 
   public currentPath = signal<string>('undefined');
+  public subPathFilter = signal<string>('');
   private files_raw = signal<FileWithType[]>([]);
-  public imagesOrdered = signal<FileWithType[]>([]);
+  public imagesOrdered = computed(() => {
+    const filter = this.subPathFilter();
+    const raw_files = this.files_raw();
+    if (!filter || filter === '/' || filter === this.currentPath()) {
+      return raw_files;
+    }
+    // Only return images that live exactly inside the filtered subfolder
+    // OR any of its nested folders.
+    return raw_files.filter(f => f.path.startsWith(filter + '/'));
+  });
   public directoryOrdered = signal<[string, FileWithType[]][]>([]);
+  public displayedDirectories = computed(() => {
+    const filter = this.subPathFilter();
+    const dirs = this.directoryOrdered();
+    if (!filter || filter === '/' || filter === this.currentPath()) {
+      return dirs;
+    }
+    // Only return directories that strictly match the selected subfolder
+    // or are children of it. Since the chips build up absolute relative 
+    // paths from the root, we check if the path starts with the filter.
+    return dirs.filter(([path, _]) => path === filter || path.startsWith(filter + '/'));
+  });
   public isLoading = signal(false);
 
   constructor(
@@ -40,6 +61,7 @@ export class FilesService {
     try {
       const handle = await this.fileSystemService.openDirectory();
       this.currentPath.set(handle.name);
+      this.subPathFilter.set(''); // Reset filter on new root selection
       await this.loadDirectory(handle);
       this.router.navigateByUrl('/folder/' + encodeURIComponent(handle.name));
     } catch (e) {
@@ -49,14 +71,13 @@ export class FilesService {
     }
   }
 
-  // Not used in PWA flow immediately, but maybe for restoring session?
   setNewDirectory(path: string) {
-    // In PWA, we can't just "set" a path string to open it.
-    // We need a handle. If this is called from URL param, we might not have permission.
-    // For now, we rely on pickNewDirectory to set everything up.
-    // If the app reloads on /folder/foo, we might be stuck without a handle.
-    // We'd need IndexedDB to persist handles.
-    console.debug('setNewDirectory not fully supported without persistent handles');
+    if (path === this.currentPath() || path === 'undefined') {
+       this.subPathFilter.set(''); // Root level
+    } else {
+       // Since the router passes the full relative path, we can just set it
+       this.subPathFilter.set(path);
+    }
   }
 
   private async loadDirectory(dirHandle: FileSystemDirectoryHandle) {
@@ -89,7 +110,6 @@ export class FilesService {
     this.files_raw.set(files);
 
     //Populate the precomputed maps
-    this.imagesOrdered.set(files);
 
     const imageByPath = new Map<string, FileWithType[]>();
     files.forEach((img) => {
@@ -115,9 +135,10 @@ export class FilesService {
   }
 
   randomizeImages() {
-    const newOrder = Array.from(this.imagesOrdered());
+    const newOrder = Array.from(this.files_raw());
     this.shuffle(newOrder);
-    this.imagesOrdered.set(newOrder);
+    // Setting files_raw affects the source of truth for all computed views
+    this.files_raw.set(newOrder);
   }
 
   async deleteFile(file: FileWithType) {

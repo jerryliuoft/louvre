@@ -3,7 +3,7 @@
   @if(first){
   <span>{{ getChipTitle(part) }}</span
   >}@else {
-  <a mat-icon-button [routerLink]="'/folder/' + part">
+  <a mat-icon-button [routerLink]="'/folder/' + encodePath(part)">
     <mat-chip>{{ getChipTitle(part) }}</mat-chip>
   </a>
   } @if(!last){
