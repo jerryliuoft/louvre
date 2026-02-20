@@ -1,4 +1,4 @@
-<img-header [src]="src()"></img-header>
+<img-header [src]="file().url!"></img-header>
 <div
   #imageContainer
   class="imageContainer"
@@ -8,5 +8,9 @@
   (mousemove)="onMouseMove($event)"
   (keydown)="onKeyDown($event)"
 >
-  <img #mainImage [src]="src()" [ngStyle]="customStyle()" />
+  @if(isImg()) {
+  <img #mainImage [src]="file().url!" [ngStyle]="customStyle()" />
+  } @else {
+  <video #mainImage [src]="file().url!" [ngStyle]="customStyle()" controls autoplay loop></video>
+  }
 </div>

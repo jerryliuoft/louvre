@@ -1,7 +1,7 @@
 <div class="media-container">
   @if(isImg()) {
   <img
-    (click)="imageViewService.openDialog(file().url!)"
+    (click)="imageViewService.openDialog(file())"
     class="radius-sm pointer"
     [src]="file().url!"
     width="auto"
@@ -9,7 +9,7 @@
     loading="lazy"
   />
   } @else {
-  <video [width]="height()" [height]="height()" controls>
+  <video (click)="imageViewService.openDialog(file())" class="pointer" [width]="height()" [height]="height()" controls>
     <source [src]="file().url!" type="video/mp4" />
     <source [src]="file().url!" type="video/webm" />
     <source [src]="file().url!" type="video/ogg" />

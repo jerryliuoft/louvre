@@ -1,1 +1,15 @@
-<app-image-view [src]="data.filePath"></app-image-view>
+@if (currentFile()) {
+  <app-image-view [file]="currentFile()!"></app-image-view>
+}
+
+@if (hasPrev()) {
+  <button mat-icon-button class="nav-button prev-button" (click)="prev()">
+    <mat-icon>chevron_left</mat-icon>
+  </button>
+}
+
+@if (hasNext()) {
+  <button mat-icon-button class="nav-button next-button" (click)="next()">
+    <mat-icon>chevron_right</mat-icon>
+  </button>
+}

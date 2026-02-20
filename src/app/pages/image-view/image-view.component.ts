@@ -5,11 +5,13 @@ import {
   input,
   signal,
   ViewChild,
+  effect,
 } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ModalComponent } from './modal/modal.component';
+import { FileWithType } from '../../models/file.model';
 
 @Component({
   selector: 'app-image-view',
@@ -19,7 +21,7 @@ import { ModalComponent } from './modal/modal.component';
   styleUrl: './image-view.component.scss',
 })
 export class ImageViewComponent {
-  src = input.required<string>();
+  file = input.required<FileWithType>();
   dialogRef = inject(MatDialogRef<ModalComponent>);
 
   @ViewChild('mainImage') mainIamge!: ElementRef;
@@ -39,6 +41,28 @@ export class ImageViewComponent {
       this.scale +
       ')',
   });
+
+  constructor() {
+    effect(() => {
+      // depend on file() so this runs when the user hits next/prev in the Modal
+      const currentFile = this.file();
+      
+      this.scale = 1;
+      this.pointX = 0;
+      this.pointY = 0;
+      this.panning = false;
+      this.transform();
+    });
+  }
+
+  isImg() {
+    const parts = this.file().name.split('.');
+    const SUPPORTED_VIDEO_TYPES: any = { webm: true, mp4: true, mkv: true, ogg: true, mov: true };
+    if (parts.length > 1) {
+      return !(parts.at(-1)!.toLocaleLowerCase() in SUPPORTED_VIDEO_TYPES);
+    }
+    return true;
+  }
 
   transform() {
     this.customStyle.set({

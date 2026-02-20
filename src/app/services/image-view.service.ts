@@ -2,15 +2,17 @@ import { inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ModalComponent } from '../pages/image-view/modal/modal.component';
 
+import { FileWithType } from '../models/file.model';
+
 @Injectable({
   providedIn: 'root',
 })
 export class ImageViewService {
   readonly dialog = inject(MatDialog);
 
-  openDialog(filePath: string): void {
+  openDialog(file: FileWithType): void {
     const dialogRef = this.dialog.open(ModalComponent, {
-      data: { filePath },
+      data: { file },
       maxWidth: '100vw',
       maxHeight: '100vh',
       height: '100%',
