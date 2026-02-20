@@ -56,14 +56,23 @@ export class FilesService {
     // paths from the root, we check if the path starts with the filter.
     return dirs.filter(([path, _]) => path === filter || path.startsWith(filter + '/'));
   });
+  public currentFolderName = computed(() => {
+    const filter = this.subPathFilter();
+    if (!filter) return '';
+    const parts = filter.split('/');
+    return parts[parts.length - 1];
+  });
   public isLoading = signal(false);
+  public moveProgress = signal<{current: number, total: number} | null>(null);
   public recentDirectories = signal<RecentDirectory[]>([]);
+  public moveDestinations = signal<RecentDirectory[]>([]);
 
   constructor(
     private router: Router,
     private fileSystemService: FileSystemService
   ) {
     this.loadRecentDirectories();
+    this.loadMoveDestinations();
   }
 
   private async loadRecentDirectories() {
@@ -86,6 +95,104 @@ export class FilesService {
       await set('recent_directories', updated);
     } catch (e) {
       console.warn('Failed to save recent directories', e);
+    }
+  }
+
+  private async loadMoveDestinations() {
+    try {
+      const recent = await get<RecentDirectory[]>('move_destinations');
+      if (recent) {
+        this.moveDestinations.set(recent);
+      }
+    } catch (e) {
+      console.warn('Failed to load move destinations', e);
+    }
+  }
+
+  private async saveMoveDestination(handle: FileSystemDirectoryHandle) {
+    const current = this.moveDestinations();
+    const filtered = current.filter((d: RecentDirectory) => d.name !== handle.name);
+    const updated = [{ name: handle.name, handle }, ...filtered].slice(0, 10);
+    this.moveDestinations.set(updated);
+    try {
+      await set('move_destinations', updated);
+    } catch (e) {
+      console.warn('Failed to save move destinations', e);
+    }
+  }
+
+  async pickMoveDestination() {
+    try {
+      const handle = await this.fileSystemService.openDirectory();
+      if(handle) {
+          await this.saveMoveDestination(handle);
+          await this.moveCurrentFolder(handle);
+      }
+    } catch (e) {
+      console.error('Error picking move destination directory', e);
+    }
+  }
+
+  async moveCurrentFolder(destRootHandle: FileSystemDirectoryHandle) {
+    const currentSubPath = this.subPathFilter();
+    if (!currentSubPath || currentSubPath === '' || currentSubPath === '/' || currentSubPath === this.currentPath()) {
+      console.error('Cannot move the root directory.');
+      return;
+    }
+
+    this.isLoading.set(true);
+    try {
+        const options: FileSystemHandlePermissionDescriptor = { mode: 'readwrite' };
+        if ((await destRootHandle.queryPermission(options)) !== 'granted') {
+            if ((await destRootHandle.requestPermission(options)) !== 'granted') {
+                console.warn('Permission denied for move destination directory');
+                return;
+            }
+        }
+        
+        let rootHandle: FileSystemDirectoryHandle | null = null;
+        for (const recent of this.recentDirectories()) {
+           if (recent.name === this.currentPath()) {
+              rootHandle = recent.handle;
+              break;
+           }
+        }
+
+        if (!rootHandle) {
+             console.error('Could not find root directory handle for move operation');
+             return;
+        }
+        
+        const parts = currentSubPath.split('/');
+        const sourceDirName = parts.pop()!;
+        const parentPath = parts.join('/');
+        
+        let sourceParentHandle = rootHandle;
+        if (parentPath) {
+             sourceParentHandle = await this.fileSystemService.getDirectoryHandleByPath(rootHandle, parentPath);
+        }
+
+        this.moveProgress.set({current: 0, total: 0});
+        await this.fileSystemService.moveDirectory(sourceParentHandle, sourceDirName, destRootHandle, (copied, total) => {
+            this.moveProgress.set({current: copied, total});
+        });
+        await this.saveMoveDestination(destRootHandle);
+        
+        const remainingFiles = this.files_raw().filter((f: FileWithType) => !f.path.startsWith(currentSubPath + '/'));
+        this.updateFileList(remainingFiles);
+        this.files_original.set([...remainingFiles]);
+        
+        const cacheKey = `dir_cache_${rootHandle.name}`;
+        await set(cacheKey, remainingFiles);
+
+        const newPathSegment = parentPath ? parentPath : this.currentPath();
+        this.router.navigateByUrl('/folder/' + encodeURIComponent(newPathSegment));
+
+    } catch (e) {
+      console.error('Error moving directory', e);
+    } finally {
+      this.moveProgress.set(null);
+      this.isLoading.set(false);
     }
   }
 

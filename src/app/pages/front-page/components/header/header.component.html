@@ -24,6 +24,34 @@
     >
       <mat-icon>shuffle</mat-icon>
     </button>
+    @if(filesService.subPathFilter() && filesService.subPathFilter() !== '' && filesService.subPathFilter() !== 'undefined' && filesService.subPathFilter() !== filesService.currentPath() && filesService.subPathFilter() !== '/') {
+    <button
+      mat-icon-button
+      [aria-label]="'Move folder ' + filesService.currentFolderName()"
+      [matMenuTriggerFor]="moveMenu"
+    >
+      <mat-icon>drive_file_move</mat-icon>
+    </button>
+    <mat-menu #moveMenu="matMenu">
+      <div mat-menu-item disabled style="opacity: 1; color: white; cursor: default;">
+        <strong>Moving:</strong> {{ filesService.currentFolderName() }}
+      </div>
+      <mat-divider></mat-divider>
+      <button mat-menu-item (click)="filesService.pickMoveDestination()">
+        <mat-icon>create_new_folder</mat-icon>
+        <span>Pick new destination...</span>
+      </button>
+      @if (filesService.moveDestinations().length > 0) {
+        <mat-divider></mat-divider>
+        @for (dest of filesService.moveDestinations(); track dest.name) {
+          <button mat-menu-item (click)="filesService.moveCurrentFolder(dest.handle)">
+            <mat-icon>folder</mat-icon>
+            <span>Move to {{ dest.name }}</span>
+          </button>
+        }
+      }
+    </mat-menu>
+    }
     <button
       mat-icon-button
       (click)="selectDirectory()"

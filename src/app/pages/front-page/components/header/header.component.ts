@@ -7,6 +7,8 @@ import { DisplayService } from '../../../../services/display.service';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { Location } from '@angular/common';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatMenuModule } from '@angular/material/menu';
+import { MatDividerModule } from '@angular/material/divider';
 
 @Component({
   selector: 'app-header',
@@ -17,6 +19,8 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatIconModule,
     MatPaginatorModule,
     MatButtonToggleModule,
+    MatMenuModule,
+    MatDividerModule,
   ],
   templateUrl: './header.component.html',
 })
