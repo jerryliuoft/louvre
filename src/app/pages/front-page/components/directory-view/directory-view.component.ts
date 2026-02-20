@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { DisplayService } from '../../../../services/display.service';
 import { DirectoryChipsComponent } from "../directory-chips/directory-chips.component";
 import { FileWithType } from '../../../../models/file.model';
+import { EmptyStateComponent } from '../empty-state/empty-state.component';
 
 @Component({
   selector: 'app-directory-view',
@@ -16,7 +17,8 @@ import { FileWithType } from '../../../../models/file.model';
     MediaContainerComponent,
     MatIconModule,
     MatButtonModule,
-    DirectoryChipsComponent
+    DirectoryChipsComponent,
+    EmptyStateComponent,
 ],
   templateUrl: './directory-view.component.html',
   styleUrl: './directory-view.component.scss',

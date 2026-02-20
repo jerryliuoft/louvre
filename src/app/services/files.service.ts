@@ -2,6 +2,12 @@ import { Injectable, signal, computed } from '@angular/core';
 import { FileWithType } from '../models/file.model';
 import { Router } from '@angular/router';
 import { FileSystemService } from './file-system.service';
+import { get, set } from 'idb-keyval';
+
+export interface RecentDirectory {
+  name: string;
+  handle: FileSystemDirectoryHandle;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -51,11 +57,37 @@ export class FilesService {
     return dirs.filter(([path, _]) => path === filter || path.startsWith(filter + '/'));
   });
   public isLoading = signal(false);
+  public recentDirectories = signal<RecentDirectory[]>([]);
 
   constructor(
     private router: Router,
     private fileSystemService: FileSystemService
-  ) {}
+  ) {
+    this.loadRecentDirectories();
+  }
+
+  private async loadRecentDirectories() {
+    try {
+      const recent = await get<RecentDirectory[]>('recent_directories');
+      if (recent) {
+        this.recentDirectories.set(recent);
+      }
+    } catch (e) {
+      console.warn('Failed to load recent directories', e);
+    }
+  }
+
+  private async saveRecentDirectory(handle: FileSystemDirectoryHandle) {
+    const current = this.recentDirectories();
+    const filtered = current.filter((d: RecentDirectory) => d.name !== handle.name);
+    const updated = [{ name: handle.name, handle }, ...filtered].slice(0, 10);
+    this.recentDirectories.set(updated);
+    try {
+      await set('recent_directories', updated);
+    } catch (e) {
+      console.warn('Failed to save recent directories', e);
+    }
+  }
 
   async pickNewDirectory() {
     this.isLoading.set(true);
@@ -63,10 +95,36 @@ export class FilesService {
       const handle = await this.fileSystemService.openDirectory();
       this.currentPath.set(handle.name);
       this.subPathFilter.set(''); // Reset filter on new root selection
+      await this.saveRecentDirectory(handle);
       await this.loadDirectory(handle);
       this.router.navigateByUrl('/folder/' + encodeURIComponent(handle.name));
     } catch (e) {
       console.error('Error picking directory', e);
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  async loadRecentDirectory(handle: FileSystemDirectoryHandle) {
+    this.isLoading.set(true);
+    try {
+      // Check permission
+      const options: FileSystemHandlePermissionDescriptor = { mode: 'readwrite' };
+      if ((await handle.queryPermission(options)) !== 'granted') {
+        if ((await handle.requestPermission(options)) !== 'granted') {
+          console.warn('Permission denied for recent directory');
+          return;
+        }
+      }
+
+      this.currentPath.set(handle.name);
+      this.subPathFilter.set(''); // Reset filter
+      await this.saveRecentDirectory(handle); // bump to top
+      await this.loadDirectory(handle);
+      this.router.navigateByUrl('/folder/' + encodeURIComponent(handle.name));
+
+    } catch (e) {
+      console.error('Error loading recent directory', e);
     } finally {
       this.isLoading.set(false);
     }
@@ -88,30 +146,74 @@ export class FilesService {
   }
 
   private async loadDirectory(dirHandle: FileSystemDirectoryHandle) {
+    const cacheKey = `dir_cache_${dirHandle.name}`;
+    
+    // 1. Try Cache First
+    try {
+      const cached = await get<FileWithType[]>(cacheKey);
+      if (cached && cached.length > 0) {
+        this.files_original.set([...cached]);
+        this.updateFileList(cached);
+        // Kick off background sync
+        this.backgroundSync(dirHandle, cacheKey).catch(e => console.error('Background sync failed', e));
+        return;
+      }
+    } catch (e) {
+      console.warn('Failed to read from cache', e);
+    }
+
+    // 2. Full Load if no cache (first time)
+    await this.scanDirectoryAndCache(dirHandle, cacheKey);
+  }
+
+  private async scanDirectoryAndCache(dirHandle: FileSystemDirectoryHandle, cacheKey: string) {
     const files: FileWithType[] = [];
     
-    // Revoke old URLs to avoid memory leaks
-    this.files_raw().forEach((f: FileWithType) => {
-      if (f.url) URL.revokeObjectURL(f.url);
-    });
-
     for await (const entry of this.fileSystemService.readDirectory(dirHandle)) {
       const parts = entry.handle.name.split('.');
       if (parts.length > 1 && parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES()) {
-        const file = await entry.handle.getFile();
-        const url = URL.createObjectURL(file);
         files.push({
           name: entry.handle.name,
-          path: entry.path, // relative path including filename
+          path: entry.path,
           handle: entry.handle,
-          parentHandle: entry.parentHandle,
-          url: url
+          parentHandle: entry.parentHandle
         });
       }
     }
 
     this.files_original.set([...files]);
     this.updateFileList(files);
+    
+    try {
+      await set(cacheKey, files);
+    } catch (e) {
+      console.warn('Failed to cache directory', e);
+    }
+  }
+
+  private async backgroundSync(dirHandle: FileSystemDirectoryHandle, cacheKey: string) {
+    const files: FileWithType[] = [];
+    for await (const entry of this.fileSystemService.readDirectory(dirHandle)) {
+      const parts = entry.handle.name.split('.');
+      if (parts.length > 1 && parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES()) {
+        files.push({
+          name: entry.handle.name,
+          path: entry.path,
+          handle: entry.handle,
+          parentHandle: entry.parentHandle
+        });
+      }
+    }
+
+    // Replace the files
+    this.files_original.set([...files]);
+    this.updateFileList(files);
+    
+    try {
+      await set(cacheKey, files);
+    } catch (e) {
+      console.warn('Failed to update cache', e);
+    }
   }
 
   private updateFileList(files: FileWithType[]) {
@@ -157,20 +259,11 @@ export class FilesService {
     try {
         await file.parentHandle.removeEntry(file.name);
         // Update state
-        const remaining = this.files_raw().filter(f => f !== file);
+        const remaining = this.files_raw().filter((f: FileWithType) => f !== file);
         this.updateFileList(remaining);
         this.files_original.update((original: FileWithType[]) => original.filter((f: FileWithType) => f !== file));
-        // Revoke URL
-        if(file.url) URL.revokeObjectURL(file.url);
     } catch (e) {
         console.error('Failed to delete file', e);
-    }
-  }
-
-  async deleteFileByUrl(url: string) {
-    const file = this.files_raw().find(f => f.url === url);
-    if (file) {
-      await this.deleteFile(file);
     }
   }
 

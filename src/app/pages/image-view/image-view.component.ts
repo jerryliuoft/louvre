@@ -12,11 +12,12 @@ import { HeaderComponent } from './components/header/header.component';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ModalComponent } from './modal/modal.component';
 import { FileWithType } from '../../models/file.model';
+import { ObjectUrlPipe } from '../../pipes/object-url.pipe';
 
 @Component({
   selector: 'app-image-view',
   standalone: true,
-  imports: [NgStyle, HeaderComponent],
+  imports: [NgStyle, HeaderComponent, ObjectUrlPipe],
   templateUrl: './image-view.component.html',
   styleUrl: './image-view.component.scss',
 })

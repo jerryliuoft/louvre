@@ -5,6 +5,7 @@ import { ImageViewService } from '../../services/image-view.service';
 import { MatIconModule } from '@angular/material/icon';
 import { FilesService } from '../../services/files.service';
 import { FileWithType } from '../../models/file.model';
+import { ObjectUrlPipe } from '../../pipes/object-url.pipe';
 
 const SUPPORTED_VIDEO_TYPES = {
   webm: true,
@@ -17,7 +18,7 @@ const SUPPORTED_VIDEO_TYPES = {
 @Component({
   selector: 'app-media-container',
   standalone: true,
-  imports: [MatIconModule],
+  imports: [MatIconModule, ObjectUrlPipe],
   templateUrl: './media-container.component.html',
   styleUrl: './media-container.component.scss',
 })

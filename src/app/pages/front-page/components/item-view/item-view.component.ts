@@ -5,6 +5,8 @@ import { DisplayService } from '../../../../services/display.service';
 import { RouterLink } from '@angular/router';
 import { MediaContainerComponent } from '../../../../components/media-container/media-container.component';
 import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
+import { EmptyStateComponent } from '../empty-state/empty-state.component';
 
 @Component({
   selector: 'app-item-view',
@@ -12,10 +14,12 @@ import { MatIconModule } from '@angular/material/icon';
   imports: [
     MediaContainerComponent,
     MatIconModule,
+    MatButtonModule,
+    EmptyStateComponent,
   ],
   templateUrl: './item-view.component.html',
 })
-export class BodyPanelComponent {
+export class ItemViewComponent {
   currentImages = computed(() => {
     if (this.displayService.pageSize()) {
       const startingIndex =

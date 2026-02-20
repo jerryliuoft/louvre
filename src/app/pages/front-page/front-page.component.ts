@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, signal } from '@angular/core';
-import { BodyPanelComponent } from './components/item-view/item-view.component';
+import { ItemViewComponent } from './components/item-view/item-view.component';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { DisplayConfigsComponent } from './components/display-configs/display-configs.component';
 import { DisplayService } from '../../services/display.service';
@@ -13,7 +13,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
   selector: 'app-front-page',
   standalone: true,
   imports: [
-    BodyPanelComponent,
+    ItemViewComponent,
     HeaderComponent,
     MatSidenavModule,
     DisplayConfigsComponent,

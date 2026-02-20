@@ -3,16 +3,16 @@
   <img
     (click)="imageViewService.openDialog(file())"
     class="radius-sm pointer"
-    [src]="file().url!"
+    [src]="file().handle | objectUrl"
     width="auto"
     [height]="height()"
     loading="lazy"
   />
   } @else {
   <video (click)="imageViewService.openDialog(file())" class="pointer" [width]="height()" [height]="height()" controls>
-    <source [src]="file().url!" type="video/mp4" />
-    <source [src]="file().url!" type="video/webm" />
-    <source [src]="file().url!" type="video/ogg" />
+    <source [src]="file().handle | objectUrl" type="video/mp4" />
+    <source [src]="file().handle | objectUrl" type="video/webm" />
+    <source [src]="file().handle | objectUrl" type="video/ogg" />
     Your browser does not support the video tag.
   </video>
   }

@@ -3,5 +3,4 @@ export interface FileWithType {
   path: string;
   handle?: FileSystemFileHandle;
   parentHandle?: FileSystemDirectoryHandle;
-  url?: string;
 }

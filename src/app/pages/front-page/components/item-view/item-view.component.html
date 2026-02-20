@@ -1,10 +1,7 @@
 <div class="flex-container flex-wrap gap-md margin-sm justify-content-center">
-  @for(file of currentImages(); track file.url) {
+  @for(file of currentImages(); track file.path) {
   <app-media-container [file]="file"></app-media-container>
   }@empty {
-  <div class="flex-container align-items-center">
-    Click(<mat-icon>folder</mat-icon>)icon above to pick a folder and get
-    started!
-  </div>
+    <app-empty-state></app-empty-state>
   }
 </div>

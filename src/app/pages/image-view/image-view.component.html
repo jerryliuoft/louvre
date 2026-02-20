@@ -9,8 +9,8 @@
   (keydown)="onKeyDown($event)"
 >
   @if(isImg()) {
-  <img #mainImage [src]="file().url!" [ngStyle]="customStyle()" />
+  <img #mainImage [src]="file().handle | objectUrl" [ngStyle]="customStyle()" />
   } @else {
-  <video #mainImage [src]="file().url!" [ngStyle]="customStyle()" controls autoplay loop></video>
+  <video #mainImage [src]="file().handle | objectUrl" [ngStyle]="customStyle()" controls autoplay loop></video>
   }
 </div>
