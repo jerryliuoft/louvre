@@ -1,9 +1,7 @@
-import { Injectable, signal, inject } from '@angular/core';
+import { Injectable, signal } from '@angular/core';
 import { FileWithType } from '../models/file.model';
 import { Router } from '@angular/router';
 import { FileSystemService } from './file-system.service';
-import { MatDialog } from '@angular/material/dialog';
-import { ProtectedDirectoryDialogComponent } from '../components/protected-directory-dialog/protected-directory-dialog.component';
 
 @Injectable({
   providedIn: 'root',
@@ -32,8 +30,6 @@ export class FilesService {
   public directoryOrdered = signal<[string, FileWithType[]][]>([]);
   public isLoading = signal(false);
 
-  private dialog = inject(MatDialog);
-
   constructor(
     private router: Router,
     private fileSystemService: FileSystemService
@@ -46,13 +42,8 @@ export class FilesService {
       this.currentPath.set(handle.name);
       await this.loadDirectory(handle);
       this.router.navigateByUrl('/folder/' + encodeURIComponent(handle.name));
-    } catch (e: any) {
+    } catch (e) {
       console.error('Error picking directory', e);
-      if (e.name === 'NotFoundError' || e.message?.includes('system files')) {
-         this.dialog.open(ProtectedDirectoryDialogComponent, {
-           width: '500px'
-         });
-      }
     } finally {
       this.isLoading.set(false);
     }
