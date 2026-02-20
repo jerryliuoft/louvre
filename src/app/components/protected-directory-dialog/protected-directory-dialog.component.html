@@ -1,0 +1,26 @@
+<h2 mat-dialog-title class="flex-container align-items-center gap-sm">
+  <mat-icon color="warn">warning</mat-icon>
+  Protected Directory Selected
+</h2>
+<mat-dialog-content class="mat-typography">
+  <p>
+    The browser's security settings prevent web applications from accessing
+    certain restricted system folders, such as your <strong>Downloads</strong>,
+    <strong>Desktop</strong>, or <strong>Documents</strong> folder directly.
+  </p>
+
+  <p>
+    If you encountered an error, or the folder appeared to be empty when it is
+    not, it is likely due to this protection.
+  </p>
+
+  <h3><strong>Workaround:</strong></h3>
+  <ol>
+    <li>Create a dedicated folder for Louvre elsewhere (e.g., inside Documents, or directly on your C:\ drive).</li>
+    <li>Move your media into this new folder.</li>
+    <li>Select the new folder using the picker.</li>
+  </ol>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close cdkFocusInitial>OK, Got it</button>
+</mat-dialog-actions>
