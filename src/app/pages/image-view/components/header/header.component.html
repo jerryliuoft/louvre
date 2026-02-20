@@ -9,11 +9,23 @@
     </button>
     <button
       mat-icon-button
-      (click)="showFile()"
+      (click)="goToFolder()"
       aria-label="Icon button to set the directory to load images"
-      mat-tooltip="Show file on computer"
+      mat-tooltip="Go to containing folder"
     >
-      <mat-icon>image_search</mat-icon>
+      <mat-icon>folder_open</mat-icon>
+    </button>
+  </div>
+  <div>
+    <button
+      mat-icon-button
+      (click)="deleteFile()"
+      aria-label="Icon button to delete the current image"
+      mat-tooltip="Delete file"
+      color="warn"
+      style="color: #f44336;"
+    >
+      <mat-icon>delete</mat-icon>
     </button>
   </div>
 </mat-toolbar>

@@ -81,6 +81,12 @@ export class FilesService {
     }
   }
 
+  goToFolder(file: FileWithType) {
+    const lastSlash = file.path.lastIndexOf('/');
+    const folderPath = lastSlash > -1 ? file.path.substring(0, lastSlash) : this.currentPath();
+    this.router.navigateByUrl('/folder/' + encodeURIComponent(folderPath));
+  }
+
   private async loadDirectory(dirHandle: FileSystemDirectoryHandle) {
     const files: FileWithType[] = [];
     

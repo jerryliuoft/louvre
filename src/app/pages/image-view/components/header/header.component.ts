@@ -7,6 +7,8 @@ import { Location } from '@angular/common';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatDialogRef } from '@angular/material/dialog';
 import { ModalComponent } from '../../modal/modal.component';
+import { FileWithType } from '../../../../models/file.model';
+import { FilesService } from '../../../../services/files.service';
 
 @Component({
   selector: 'img-header',
@@ -20,10 +22,17 @@ import { ModalComponent } from '../../modal/modal.component';
   templateUrl: './header.component.html',
 })
 export class HeaderComponent {
-  src = input.required();
+  file = input.required<FileWithType>();
   dialogRef = inject(MatDialogRef<ModalComponent>);
+  filesService = inject(FilesService);
 
-  showFile() {
-    console.warn('Show file not supported in PWA');
+  goToFolder() {
+    this.filesService.goToFolder(this.file());
+    this.dialogRef.close();
+  }
+
+  async deleteFile() {
+    await this.filesService.deleteFile(this.file());
+    this.dialogRef.close();
   }
 }
