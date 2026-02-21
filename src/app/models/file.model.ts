@@ -6,5 +6,4 @@ export interface FileWithType {
   handle?: FileSystemFileHandle;
   parentHandle?: FileSystemDirectoryHandle;
   faces?: FaceDescriptor[]; // Complete descriptor objects including bounding boxes
-  faceDescriptors?: Float32Array[]; // Legacy support
 }

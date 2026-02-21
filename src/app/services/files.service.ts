@@ -49,7 +49,7 @@ export class FilesService {
     const targetFace = this.targetFaceDescriptor();
     if (targetFace) {
       raw_files = raw_files.filter(f => {
-         const descriptorsToSearch = f.faces ? f.faces.map((face: any) => face.descriptor) : f.faceDescriptors;
+         const descriptorsToSearch = f.faces?.map((face: any) => face.descriptor);
          if (!descriptorsToSearch) return false;
          return this.faceRecognitionService.hasMatch(targetFace, descriptorsToSearch);
       });
@@ -67,29 +67,28 @@ export class FilesService {
   public uniqueFaces = computed(() => {
     // Generate a unique list of face descriptors for the side panel gallery
     // O(n*m) simple clustering, where n is faces and m is unique faces
-    const unique: { descriptor: Float32Array, file: FileWithType, box?: any }[] = [];
+    const unique: { descriptor: Float32Array, file: FileWithType, box?: any, count: number }[] = [];
     const files = this.files_original(); // We extract faces from all files in the root dir
     
     for (const file of files) {
       if (file.faces && file.faces.length > 0) {
          for (const face of file.faces) {
             // Check if this descriptor matches any we already found
-            const matchIndex = unique.findIndex(u => this.faceRecognitionService.compareFaces(face.descriptor, u.descriptor) < 0.5);
+            const matchIndex = unique.findIndex(u => this.faceRecognitionService.computeSimilarity(face.descriptor, u.descriptor) > 0.55);
             if (matchIndex === -1) {
                // New unique face found
-               unique.push({ descriptor: face.descriptor, file, box: face.box });
-            }
-         }
-      } else if (file.faceDescriptors && file.faceDescriptors.length > 0) {
-         // Fallback for older cached files without bounding boxes
-         for (const desc of file.faceDescriptors) {
-            const matchIndex = unique.findIndex(u => this.faceRecognitionService.compareFaces(desc, u.descriptor) < 0.5);
-            if (matchIndex === -1) {
-               unique.push({ descriptor: desc, file });
+               unique.push({ descriptor: face.descriptor, file, box: face.box, count: 1 });
+            } else {
+               // Known face found, increment count
+               unique[matchIndex].count++;
             }
          }
       }
     }
+    
+    // Sort by most frequent faces
+    unique.sort((a, b) => b.count - a.count);
+    
     return unique;
   });
 
@@ -362,8 +361,7 @@ export class FilesService {
           path: entry.path,
           handle: entry.handle,
           parentHandle: entry.parentHandle,
-          faces: cachedMatch?.faces,
-          faceDescriptors: cachedMatch?.faces ? undefined : cachedMatch?.faceDescriptors
+          faces: cachedMatch?.faces
         });
       }
     }
@@ -408,6 +406,40 @@ export class FilesService {
     }
   }
 
+  async clearAllFaces() {
+    this.isLoading.set(true);
+    let rootHandle: FileSystemDirectoryHandle | null = null;
+    for (const recent of this.recentDirectories()) {
+       if (recent.name === this.currentPath()) {
+          rootHandle = recent.handle;
+          break;
+       }
+    }
+
+    if (!rootHandle) {
+         console.warn('Could not find root directory handle for clearing faces');
+         this.isLoading.set(false);
+         return;
+    }
+    
+    const cacheKey = `dir_cache_${rootHandle.name}`;
+    
+    const currentFiles = [...this.files_raw()];
+    for (let i = 0; i < currentFiles.length; i++) {
+        currentFiles[i] = { ...currentFiles[i], faces: undefined };
+    }
+    
+    this.files_original.set([...currentFiles]);
+    this.updateFileList(currentFiles);
+    
+    try {
+        await set(cacheKey, currentFiles);
+    } catch (e) {
+        console.warn('Failed to update cache after clearing faces', e);
+    }
+    this.isLoading.set(false);
+  }
+
   private async backgroundFaceSync(dirHandle: FileSystemDirectoryHandle, cacheKey: string) {
     if (!this.faceRecognitionService.isReady()) {
       await this.faceRecognitionService.initialize();
@@ -416,7 +448,7 @@ export class FilesService {
     const currentFiles = [...this.files_raw()];
     let hasUpdates = false;
 
-    // Filter to those missing `faces` instead of `faceDescriptors`
+    // Filter to those missing `faces`
     const imagesToProcess = currentFiles.filter(f => f.name.match(/\.(jpg|jpeg|png|webp|avif)$/i) && !f.faces && f.handle);
     this.scanProgress.set({current: 0, total: imagesToProcess.length});
     let processedCount = 0;
@@ -428,22 +460,20 @@ export class FilesService {
        // Only process images (skip video for now since extracting individual frames is much heavier)
        const isImage = file.name.match(/\.(jpg|jpeg|png|webp|avif)$/i);
        
-       // Always rescan if it only has `faceDescriptors` to get the bounding boxes
-       if (isImage && (!file.faces) && file.handle) {
+       if (isImage && !file.faces && file.handle) {
           try {
              const fileData = await file.handle.getFile();
              const faces = await this.faceRecognitionService.extractFacesFromFile(fileData);
              
              currentFiles[i] = {
                 ...file,
-                faces: faces, // Store the comprehensive face descriptor info
-                faceDescriptors: undefined // Wipe the old legacy one
+                faces: faces
              };
              hasUpdates = true;
           } catch (e) {
              console.warn(`Failed to process faces for ${file.name}`, e);
              // Mark as empty array so we don't try again next time
-             currentFiles[i] = { ...file, faces: [], faceDescriptors: undefined };
+             currentFiles[i] = { ...file, faces: [] };
              hasUpdates = true;
           } finally {
              processedCount++;

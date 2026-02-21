@@ -29,6 +29,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/@vladmandic/human/models",
+                "output": "/assets/models/human"
               }
             ],
             "styles": [
@@ -89,6 +94,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "node_modules/@vladmandic/human/models",
+                "output": "/assets/models/human"
               }
             ],
             "styles": [

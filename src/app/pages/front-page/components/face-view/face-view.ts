@@ -3,6 +3,7 @@ import { FilesService } from '../../../../services/files.service';
 import { DisplayService } from '../../../../services/display.service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { FaceThumbnailComponent } from '../../../../components/face-thumbnail/face-thumbnail.component';
 import { ObjectUrlPipe } from '../../../../pipes/object-url.pipe';
 
@@ -13,7 +14,8 @@ import { ObjectUrlPipe } from '../../../../pipes/object-url.pipe';
     MatButtonModule,
     MatIconModule,
     FaceThumbnailComponent,
-    ObjectUrlPipe
+    ObjectUrlPipe,
+    MatTooltipModule
   ],
   templateUrl: './face-view.html',
   styleUrls: ['./face-view.scss']

@@ -9,13 +9,25 @@
       }
     </div>
 
-    <div>
+    <div style="display: flex; gap: 8px;">
       @if(filesService.isScanningFaces()) {
         <div style="font-size: 14px; opacity: 0.8; line-height: 36px; display: flex; align-items: center; gap: 8px;">
           <mat-icon class="spin">sync</mat-icon>
           Scanning faces: {{ filesService.scanProgress()?.current }} / {{ filesService.scanProgress()?.total }}
         </div>
       } @else {
+        <button
+          mat-stroked-button
+          color="warn"
+          style="border-color: rgba(255, 255, 255, 0.2);"
+          (click)="filesService.clearAllFaces()"
+          [disabled]="filesService.isLoading()"
+          matTooltip="Delete all face data and reset for a fresh scan"
+        >
+          <mat-icon>delete_sweep</mat-icon>
+          Clear Cache
+        </button>
+
         <button
           mat-stroked-button
           color="primary"
