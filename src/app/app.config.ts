@@ -1,13 +1,4 @@
 import { ApplicationConfig, provideZoneChangeDetection } from '@angular/core';
-import {
-  ActivatedRouteSnapshot,
-  BaseRouteReuseStrategy,
-  provideRouter,
-  RouteReuseStrategy,
-  withComponentInputBinding,
-} from '@angular/router';
-
-import { routes } from './app.routes';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 // MAYBE I CAN USE THIS IN THE FUTURE,
@@ -25,8 +16,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
-    provideRouter(routes, withComponentInputBinding()),
     provideAnimationsAsync(),
-    // { provide: RouteReuseStrategy, useClass: CustomReuseStrategy },
   ],
 };

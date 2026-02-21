@@ -2,7 +2,6 @@ import { Component, computed } from '@angular/core';
 import { FilesService } from '../../../../services/files.service';
 import { NgOptimizedImage } from '@angular/common';
 import { DisplayService } from '../../../../services/display.service';
-import { RouterLink } from '@angular/router';
 import { MediaContainerComponent } from '../../../../components/media-container/media-container.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';

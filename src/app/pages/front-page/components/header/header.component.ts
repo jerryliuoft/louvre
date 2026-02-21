@@ -5,7 +5,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { FilesService } from '../../../../services/files.service';
 import { DisplayService } from '../../../../services/display.service';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
-import { Location } from '@angular/common';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
@@ -31,8 +30,7 @@ export class HeaderComponent {
 
   constructor(
     protected filesService: FilesService,
-    protected displayService: DisplayService,
-    protected location: Location
+    protected displayService: DisplayService
   ) {}
   async selectDirectory() {
     this.filesService.pickNewDirectory();

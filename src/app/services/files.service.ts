@@ -1,6 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { FileWithType } from '../models/file.model';
-import { Router } from '@angular/router';
 import { FileSystemService } from './file-system.service';
 import { FaceRecognitionService } from './face-recognition.service';
 import { get, set } from 'idb-keyval';
@@ -118,7 +117,6 @@ export class FilesService {
   public moveDestinations = signal<RecentDirectory[]>([]);
 
   constructor(
-    private router: Router,
     private fileSystemService: FileSystemService,
     private faceRecognitionService: FaceRecognitionService
   ) {
@@ -238,7 +236,7 @@ export class FilesService {
         await set(cacheKey, remainingFiles);
 
         const newPathSegment = parentPath ? parentPath : this.currentPath();
-        this.router.navigateByUrl('/folder/' + encodeURIComponent(newPathSegment));
+        this.setNewDirectory(newPathSegment);
 
     } catch (e) {
       console.error('Error moving directory', e);
@@ -256,7 +254,7 @@ export class FilesService {
       this.subPathFilter.set(''); // Reset filter on new root selection
       await this.saveRecentDirectory(handle);
       await this.loadDirectory(handle);
-      this.router.navigateByUrl('/folder/' + encodeURIComponent(handle.name));
+      this.setNewDirectory(handle.name);
     } catch (e) {
       console.error('Error picking directory', e);
     } finally {
@@ -280,7 +278,7 @@ export class FilesService {
       this.subPathFilter.set(''); // Reset filter
       await this.saveRecentDirectory(handle); // bump to top
       await this.loadDirectory(handle);
-      this.router.navigateByUrl('/folder/' + encodeURIComponent(handle.name));
+      this.setNewDirectory(handle.name);
 
     } catch (e) {
       console.error('Error loading recent directory', e);
@@ -301,7 +299,7 @@ export class FilesService {
   goToFolder(file: FileWithType) {
     const lastSlash = file.path.lastIndexOf('/');
     const folderPath = lastSlash > -1 ? file.path.substring(0, lastSlash) : this.currentPath();
-    this.router.navigateByUrl('/folder/' + encodeURIComponent(folderPath));
+    this.setNewDirectory(folderPath);
   }
 
   private async loadDirectory(dirHandle: FileSystemDirectoryHandle) {

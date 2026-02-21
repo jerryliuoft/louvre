@@ -1,13 +1,12 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { MatChipsModule } from '@angular/material/chips';
-import { RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { FilesService } from '../../../../services/files.service';
 
 @Component({
   selector: 'app-directory-chips',
   standalone: true,
-  imports: [MatChipsModule, RouterLink, MatIconModule],
+  imports: [MatChipsModule, MatIconModule],
   templateUrl: './directory-chips.component.html',
   styleUrl: './directory-chips.component.scss',
 })
@@ -37,8 +36,8 @@ export class DirectoryChipsComponent {
     return cleanPath.split('/').pop() || cleanPath;
   }
 
-  encodePath(folder_path: string) {
-    return encodeURIComponent(folder_path);
+  goToDirectory(folder_path: string) {
+    this.filesService.setNewDirectory(folder_path);
   }
 }
 

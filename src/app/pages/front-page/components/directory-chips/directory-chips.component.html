@@ -3,9 +3,7 @@
     @if(last){
       <mat-chip style="font-weight: bold;">{{ getChipTitle(part) }}</mat-chip>
     } @else {
-      <a [routerLink]="'/folder/' + encodePath(part)" style="text-decoration: none;">
-        <mat-chip style="cursor: pointer;">{{ getChipTitle(part) }}</mat-chip>
-      </a>
+      <mat-chip style="cursor: pointer;" (click)="goToDirectory(part)">{{ getChipTitle(part) }}</mat-chip>
       <span style="margin: 0 8px;">/</span>
     }
   }
