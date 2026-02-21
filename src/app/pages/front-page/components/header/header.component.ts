@@ -9,6 +9,7 @@ import { Location } from '@angular/common';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @Component({
   selector: 'app-header',
@@ -21,6 +22,7 @@ import { MatDividerModule } from '@angular/material/divider';
     MatButtonToggleModule,
     MatMenuModule,
     MatDividerModule,
+    MatTooltipModule,
   ],
   templateUrl: './header.component.html',
 })
@@ -42,7 +44,7 @@ export class HeaderComponent {
     this.displayService.pageIndex.update((prev) => event.pageIndex);
     this.displayService.pageSize.update((prev) => event.pageSize);
   }
-  setDisplayType(type: 'folder' | 'item') {
+  setDisplayType(type: 'folder' | 'item' | 'faces') {
     this.displayService.displayType.set(type);
     this.displayService.pageIndex.set(0);
   }

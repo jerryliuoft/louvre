@@ -1,12 +1,21 @@
 <div class="flex-container align-items-center">
-  @for( part of parsedPaths(); track part; let last = $last, first = $first){
-  @if(first){
-  <span>{{ getChipTitle(part) }}</span
-  >}@else {
-  <a mat-icon-button [routerLink]="'/folder/' + encodePath(part)">
-    <mat-chip>{{ getChipTitle(part) }}</mat-chip>
-  </a>
-  } @if(!last){
-  <span>/</span>
-  } }
+  @for( part of parsedPaths(); track part; let last = $last){
+    @if(last){
+      <mat-chip style="font-weight: bold;">{{ getChipTitle(part) }}</mat-chip>
+    } @else {
+      <a [routerLink]="'/folder/' + encodePath(part)" style="text-decoration: none;">
+        <mat-chip style="cursor: pointer;">{{ getChipTitle(part) }}</mat-chip>
+      </a>
+      <span style="margin: 0 8px;">/</span>
+    }
+  }
+  
+  @if(filesService.targetFaceDescriptor()) {
+    <mat-chip-row style="margin-left: 16px; background-color: #ffd740; color: #000;" (removed)="clearFaceFilter()">
+      Filtered by Person
+      <button matChipRemove aria-label="Remove face filter">
+        <mat-icon>cancel</mat-icon>
+      </button>
+    </mat-chip-row>
+  }
 </div>

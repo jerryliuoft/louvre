@@ -15,6 +15,18 @@
     >
       <mat-icon>folder_open</mat-icon>
     </button>
+    
+    @if (file().faceDescriptors && file().faceDescriptors!.length > 0) {
+      <button
+        mat-icon-button
+        (click)="filterByFaces()"
+        aria-label="Filter gallery by people in this photo"
+        mat-tooltip="Show only photos of people in this image"
+        color="primary"
+      >
+        <mat-icon>face</mat-icon>
+      </button>
+    }
   </div>
   <div>
     <button

@@ -18,7 +18,9 @@
     </div>
     } @if(displayService.displayType() === "item"){
     <app-item-view></app-item-view>
-    }@else {
+    } @else if(displayService.displayType() === "faces"){
+    <app-face-view></app-face-view>
+    } @else {
     <app-directory-view></app-directory-view>
     }
   </mat-sidenav-content>

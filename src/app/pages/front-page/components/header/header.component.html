@@ -16,6 +16,11 @@
     >
       <mat-button-toggle value="folder">Folder</mat-button-toggle>
       <mat-button-toggle value="item">All</mat-button-toggle>
+      <mat-button-toggle value="faces">
+        <div style="display: flex; align-items: center; gap: 4px;">
+          <mat-icon style="font-size: 18px; width: 18px; height: 18px;" [style.color]="filesService.targetFaceDescriptor() ? '#ffd740' : 'inherit'">{{ filesService.targetFaceDescriptor() ? 'face_retouching_natural' : 'person' }}</mat-icon>People
+        </div>
+      </mat-button-toggle>
     </mat-button-toggle-group>
     <button
       mat-icon-button
@@ -24,6 +29,8 @@
     >
       <mat-icon>shuffle</mat-icon>
     </button>
+
+
     @if(filesService.subPathFilter() && filesService.subPathFilter() !== '' && filesService.subPathFilter() !== 'undefined' && filesService.subPathFilter() !== filesService.currentPath() && filesService.subPathFilter() !== '/') {
     <button
       mat-icon-button

@@ -8,6 +8,7 @@ import { HeaderComponent } from './components/header/header.component';
 import { FilesService } from '../../services/files.service';
 import { ActivatedRoute } from '@angular/router';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FaceViewComponent } from './components/face-view/face-view';
 
 @Component({
   selector: 'app-front-page',
@@ -18,6 +19,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     MatSidenavModule,
     DisplayConfigsComponent,
     DirectoryViewComponent,
+    FaceViewComponent,
     MatProgressSpinnerModule,
   ],
   templateUrl: './front-page.component.html',

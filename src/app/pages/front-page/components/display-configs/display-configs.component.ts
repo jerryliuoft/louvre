@@ -3,7 +3,6 @@ import { DisplayService } from '../../../../services/display.service';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
-import { FilesService } from '../../../../services/files.service';
 
 @Component({
   selector: 'app-display-configs',
@@ -27,7 +26,9 @@ export class DisplayConfigsComponent {
   ]);
   protected previewNum = [5, 10, 15, 0];
 
-  constructor(protected displayService: DisplayService) {}
+  constructor(
+    protected displayService: DisplayService
+  ) {}
 
   updateImageHeight(height: string) {
     this.displayService.imageConfigs.update((config) => {

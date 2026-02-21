@@ -19,7 +19,7 @@ export class DisplayService {
     loading: 'lazy',
   });
 
-  displayType = signal<'item' | 'folder'>('folder');
+  displayType = signal<'item' | 'folder' | 'faces'>('folder');
 
   constructor() {
     effect(() => {

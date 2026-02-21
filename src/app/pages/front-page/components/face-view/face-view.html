@@ -1,0 +1,63 @@
+<div style="padding: 24px;">
+  
+  <!-- Header / Controls -->
+  <div style="margin-bottom: 32px; display: flex; align-items: center; justify-content: space-between;">
+    <div>
+      <h2 style="margin: 0; font-weight: 300;">People in this folder</h2>
+      @if(!filesService.isScanningFaces()) {
+        <p style="margin: 4px 0 0 0; opacity: 0.6; font-size: 14px;">Select a face to view their photos</p>
+      }
+    </div>
+
+    <div>
+      @if(filesService.isScanningFaces()) {
+        <div style="font-size: 14px; opacity: 0.8; line-height: 36px; display: flex; align-items: center; gap: 8px;">
+          <mat-icon class="spin">sync</mat-icon>
+          Scanning faces: {{ filesService.scanProgress()?.current }} / {{ filesService.scanProgress()?.total }}
+        </div>
+      } @else {
+        <button
+          mat-stroked-button
+          color="primary"
+          style="border-color: rgba(255, 255, 255, 0.2);"
+          (click)="filesService.startFaceScan()"
+          [disabled]="filesService.isLoading()"
+        >
+          <mat-icon>face</mat-icon>
+          Scan Folder for Faces
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  @if(!filesService.isScanningFaces() && filesService.uniqueFaces().length === 0) {
+    <div style="text-align: center; opacity: 0.4; padding: 64px 0;">
+      <mat-icon style="font-size: 48px; width: 48px; height: 48px; margin-bottom: 16px;">face</mat-icon>
+      <h3>No faces detected</h3>
+      <p>Try scanning this folder, or navigate to a folder with photos.</p>
+    </div>
+  }
+
+  <!-- Face Grid -->
+  @if(filesService.uniqueFaces().length > 0) {
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 16px;">
+      @for(face of filesService.uniqueFaces(); track face.descriptor) {
+        <div 
+          style="aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer; border: 3px solid transparent; transition: all 0.2s;"
+          [style.borderColor]="filesService.targetFaceDescriptor() === face.descriptor ? '#ffd740' : 'transparent'"
+          [style.transform]="'scale(1)'"
+          onmouseover="this.style.transform='scale(1.05)'; this.style.borderColor='rgba(255, 215, 64, 0.5)'"
+          onmouseout="this.style.transform='scale(1)'; this.style.borderColor='transparent'"
+          (click)="selectFace(face.descriptor)"
+        >
+          @if(face.file.handle && face.box) {
+            <app-face-thumbnail [fileHandle]="face.file.handle" [box]="face.box"></app-face-thumbnail>
+          } @else if(face.file.handle) {
+            <img [src]="face.file.handle | objectUrl" style="width: 100%; height: 100%; object-fit: cover; object-position: top; pointer-events: none;" />
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

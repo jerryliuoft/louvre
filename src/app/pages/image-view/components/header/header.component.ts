@@ -31,6 +31,15 @@ export class HeaderComponent {
     this.dialogRef.close();
   }
 
+  filterByFaces() {
+    const file = this.file();
+    if (file.faceDescriptors && file.faceDescriptors.length > 0) {
+       // For MVP: Just use the first face detected as the target filter
+       this.filesService.targetFaceDescriptor.set(file.faceDescriptors[0]);
+       this.dialogRef.close(); // Close viewer to see the filtered gallery
+    }
+  }
+
   async deleteFile() {
     await this.filesService.deleteFile(this.file());
     this.dialogRef.close();

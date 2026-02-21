@@ -2,7 +2,9 @@ import { Injectable, signal, computed } from '@angular/core';
 import { FileWithType } from '../models/file.model';
 import { Router } from '@angular/router';
 import { FileSystemService } from './file-system.service';
+import { FaceRecognitionService } from './face-recognition.service';
 import { get, set } from 'idb-keyval';
+
 
 export interface RecentDirectory {
   name: string;
@@ -34,16 +36,64 @@ export class FilesService {
   public subPathFilter = signal<string>('');
   private files_raw = signal<FileWithType[]>([]);
   public files_original = signal<FileWithType[]>([]);
+  public targetFaceDescriptor = signal<Float32Array | null>(null);
+
+  public isScanningFaces = signal(false);
+  public scanProgress = signal<{current: number, total: number} | null>(null);
+
+
   public imagesOrdered = computed(() => {
     const filter = this.subPathFilter();
-    const raw_files = this.files_raw();
+    let raw_files = this.files_raw();
+    
+    // Apply face filter if set
+    const targetFace = this.targetFaceDescriptor();
+    if (targetFace) {
+      raw_files = raw_files.filter(f => {
+         const descriptorsToSearch = f.faces ? f.faces.map((face: any) => face.descriptor) : f.faceDescriptors;
+         if (!descriptorsToSearch) return false;
+         return this.faceRecognitionService.hasMatch(targetFace, descriptorsToSearch);
+      });
+    }
+
     if (!filter || filter === '/' || filter === this.currentPath()) {
       return raw_files;
     }
     // Only return images that live exactly inside the filtered subfolder
+    // Only return images that live exactly inside the filtered subfolder
     // OR any of its nested folders.
     return raw_files.filter(f => f.path.startsWith(filter + '/'));
   });
+
+  public uniqueFaces = computed(() => {
+    // Generate a unique list of face descriptors for the side panel gallery
+    // O(n*m) simple clustering, where n is faces and m is unique faces
+    const unique: { descriptor: Float32Array, file: FileWithType, box?: any }[] = [];
+    const files = this.files_original(); // We extract faces from all files in the root dir
+    
+    for (const file of files) {
+      if (file.faces && file.faces.length > 0) {
+         for (const face of file.faces) {
+            // Check if this descriptor matches any we already found
+            const matchIndex = unique.findIndex(u => this.faceRecognitionService.compareFaces(face.descriptor, u.descriptor) < 0.6);
+            if (matchIndex === -1) {
+               // New unique face found
+               unique.push({ descriptor: face.descriptor, file, box: face.box });
+            }
+         }
+      } else if (file.faceDescriptors && file.faceDescriptors.length > 0) {
+         // Fallback for older cached files without bounding boxes
+         for (const desc of file.faceDescriptors) {
+            const matchIndex = unique.findIndex(u => this.faceRecognitionService.compareFaces(desc, u.descriptor) < 0.6);
+            if (matchIndex === -1) {
+               unique.push({ descriptor: desc, file });
+            }
+         }
+      }
+    }
+    return unique;
+  });
+
   public directoryOrdered = signal<[string, FileWithType[]][]>([]);
   public displayedDirectories = computed(() => {
     const filter = this.subPathFilter();
@@ -69,11 +119,13 @@ export class FilesService {
 
   constructor(
     private router: Router,
-    private fileSystemService: FileSystemService
+    private fileSystemService: FileSystemService,
+    private faceRecognitionService: FaceRecognitionService
   ) {
     this.loadRecentDirectories();
     this.loadMoveDestinations();
   }
+
 
   private async loadRecentDirectories() {
     try {
@@ -261,8 +313,8 @@ export class FilesService {
       if (cached && cached.length > 0) {
         this.files_original.set([...cached]);
         this.updateFileList(cached);
-        // Kick off background sync
-        this.backgroundSync(dirHandle, cacheKey).catch(e => console.error('Background sync failed', e));
+        // Kick off background sync for new files AND missing face embeddings
+        this.backgroundSync(dirHandle, cacheKey, cached).catch(e => console.error('Background sync failed', e));
         return;
       }
     } catch (e) {
@@ -272,6 +324,7 @@ export class FilesService {
     // 2. Full Load if no cache (first time)
     await this.scanDirectoryAndCache(dirHandle, cacheKey);
   }
+
 
   private async scanDirectoryAndCache(dirHandle: FileSystemDirectoryHandle, cacheKey: string) {
     const files: FileWithType[] = [];
@@ -298,16 +351,21 @@ export class FilesService {
     }
   }
 
-  private async backgroundSync(dirHandle: FileSystemDirectoryHandle, cacheKey: string) {
+  private async backgroundSync(dirHandle: FileSystemDirectoryHandle, cacheKey: string, cachedFiles: FileWithType[] = []) {
     const files: FileWithType[] = [];
+    const cachedFileMap = new Map(cachedFiles.map(f => [f.path, f]));
+
     for await (const entry of this.fileSystemService.readDirectory(dirHandle)) {
       const parts = entry.handle.name.split('.');
       if (parts.length > 1 && parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES()) {
+        const cachedMatch = cachedFileMap.get(entry.path);
         files.push({
           name: entry.handle.name,
           path: entry.path,
           handle: entry.handle,
-          parentHandle: entry.parentHandle
+          parentHandle: entry.parentHandle,
+          faces: cachedMatch?.faces,
+          faceDescriptors: cachedMatch?.faces ? undefined : cachedMatch?.faceDescriptors
         });
       }
     }
@@ -320,6 +378,91 @@ export class FilesService {
       await set(cacheKey, files);
     } catch (e) {
       console.warn('Failed to update cache', e);
+    }
+  }
+
+  async startFaceScan() {
+    if (this.isScanningFaces()) return;
+    
+    // Find the handle for the current path
+    let rootHandle: FileSystemDirectoryHandle | null = null;
+    for (const recent of this.recentDirectories()) {
+       if (recent.name === this.currentPath()) {
+          rootHandle = recent.handle;
+          break;
+       }
+    }
+
+    if (!rootHandle) {
+         console.warn('Could not find root directory handle for scanning faces');
+         return;
+    }
+    
+    const cacheKey = `dir_cache_${rootHandle.name}`;
+    this.isScanningFaces.set(true);
+    try {
+        await this.backgroundFaceSync(rootHandle, cacheKey);
+    } catch (e) {
+        console.error('Manual face scan failed', e);
+    } finally {
+        this.isScanningFaces.set(false);
+        this.scanProgress.set(null);
+    }
+  }
+
+  private async backgroundFaceSync(dirHandle: FileSystemDirectoryHandle, cacheKey: string) {
+    if (!this.faceRecognitionService.isReady()) {
+      await this.faceRecognitionService.initialize();
+    }
+
+    const currentFiles = [...this.files_raw()];
+    let hasUpdates = false;
+
+    // Filter to those missing `faces` instead of `faceDescriptors`
+    const imagesToProcess = currentFiles.filter(f => f.name.match(/\.(jpg|jpeg|png|webp|avif)$/i) && !f.faces && f.handle);
+    this.scanProgress.set({current: 0, total: imagesToProcess.length});
+    let processedCount = 0;
+
+    // We process sequentially or in small batches to avoid blocking the main thread too heavily
+    for (let i = 0; i < currentFiles.length; i++) {
+       const file = currentFiles[i];
+       
+       // Only process images (skip video for now since extracting individual frames is much heavier)
+       const isImage = file.name.match(/\.(jpg|jpeg|png|webp|avif)$/i);
+       
+       // Always rescan if it only has `faceDescriptors` to get the bounding boxes
+       if (isImage && (!file.faces) && file.handle) {
+          try {
+             const fileData = await file.handle.getFile();
+             const faces = await this.faceRecognitionService.extractFacesFromFile(fileData);
+             
+             currentFiles[i] = {
+                ...file,
+                faces: faces, // Store the comprehensive face descriptor info
+                faceDescriptors: undefined // Wipe the old legacy one
+             };
+             hasUpdates = true;
+          } catch (e) {
+             console.warn(`Failed to process faces for ${file.name}`, e);
+             // Mark as empty array so we don't try again next time
+             currentFiles[i] = { ...file, faces: [], faceDescriptors: undefined };
+             hasUpdates = true;
+          } finally {
+             processedCount++;
+             this.scanProgress.set({current: processedCount, total: imagesToProcess.length});
+          }
+       }
+    }
+
+    if (hasUpdates) {
+       this.files_original.set([...currentFiles]);
+       this.updateFileList(currentFiles);
+       try {
+           // Wait until IDB saves
+           await set(cacheKey, currentFiles);
+       } catch (e) {
+           console.warn('Failed to cache face embeddings', e);
+       }
     }
   }
 
