@@ -108,9 +108,9 @@ export class FaceRecognitionService {
 
   /**
    * Checks if a descriptor matches any descriptor in a target list,
-   * using a given threshold (default 0.6).
+   * using a given threshold (default 0.5).
    */
-  hasMatch(targetDescriptor: Float32Array, descriptorsToSearch: Float32Array[], threshold: number = 0.6): boolean {
+  hasMatch(targetDescriptor: Float32Array, descriptorsToSearch: Float32Array[], threshold: number = 0.5): boolean {
     for (const desc of descriptorsToSearch) {
       const distance = this.compareFaces(targetDescriptor, desc);
       if (distance < threshold) {

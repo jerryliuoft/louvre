@@ -74,7 +74,7 @@ export class FilesService {
       if (file.faces && file.faces.length > 0) {
          for (const face of file.faces) {
             // Check if this descriptor matches any we already found
-            const matchIndex = unique.findIndex(u => this.faceRecognitionService.compareFaces(face.descriptor, u.descriptor) < 0.6);
+            const matchIndex = unique.findIndex(u => this.faceRecognitionService.compareFaces(face.descriptor, u.descriptor) < 0.5);
             if (matchIndex === -1) {
                // New unique face found
                unique.push({ descriptor: face.descriptor, file, box: face.box });
@@ -83,7 +83,7 @@ export class FilesService {
       } else if (file.faceDescriptors && file.faceDescriptors.length > 0) {
          // Fallback for older cached files without bounding boxes
          for (const desc of file.faceDescriptors) {
-            const matchIndex = unique.findIndex(u => this.faceRecognitionService.compareFaces(desc, u.descriptor) < 0.6);
+            const matchIndex = unique.findIndex(u => this.faceRecognitionService.compareFaces(desc, u.descriptor) < 0.5);
             if (matchIndex === -1) {
                unique.push({ descriptor: desc, file });
             }
