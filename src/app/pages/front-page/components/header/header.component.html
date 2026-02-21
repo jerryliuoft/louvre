@@ -22,6 +22,18 @@
         </div>
       </mat-button-toggle>
     </mat-button-toggle-group>
+
+    @if(filesService.targetFaceDescriptor()) {
+      <button 
+        mat-flat-button 
+        style="margin-left: 8px; border-radius: 16px; background-color: rgba(255, 215, 64, 0.15); color: #ffd740;" 
+        (click)="clearFaceFilter()"
+      >
+        <mat-icon style="margin-right: 4px; font-size: 20px; width: 20px; height: 20px;">person_off</mat-icon>
+        Clear Face Filter
+      </button>
+    }
+
     <button
       mat-icon-button
       aria-label="Icon button to shuffle images"

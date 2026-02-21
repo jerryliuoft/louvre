@@ -40,9 +40,5 @@ export class DirectoryChipsComponent {
   encodePath(folder_path: string) {
     return encodeURIComponent(folder_path);
   }
-
-  clearFaceFilter() {
-    this.filesService.targetFaceDescriptor.set(null);
-  }
 }
 

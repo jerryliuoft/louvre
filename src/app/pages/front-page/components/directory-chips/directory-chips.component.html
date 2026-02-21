@@ -9,13 +9,4 @@
       <span style="margin: 0 8px;">/</span>
     }
   }
-  
-  @if(filesService.targetFaceDescriptor()) {
-    <mat-chip-row style="margin-left: 16px; background-color: #ffd740; color: #000;" (removed)="clearFaceFilter()">
-      Filtered by Person
-      <button matChipRemove aria-label="Remove face filter">
-        <mat-icon>cancel</mat-icon>
-      </button>
-    </mat-chip-row>
-  }
 </div>
