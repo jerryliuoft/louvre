@@ -9,6 +9,7 @@ export class PwaService {
 
   constructor() {
     window.addEventListener('beforeinstallprompt', (e) => {
+      console.log('PWA: beforeinstallprompt event captured');
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
       // Stash the event so it can be triggered later.

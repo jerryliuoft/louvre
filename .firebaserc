@@ -1,6 +1,7 @@
 {
   "projects": {
-    "default": "louvre-f710a"
+    "default": "louvre-f710a",
+    "prod": "louvre-f710a"
   },
   "targets": {},
   "etags": {}
