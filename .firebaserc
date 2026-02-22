@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "your-new-project-id"
-  }
+    "default": "louvre-f710a"
+  },
+  "targets": {},
+  "etags": {}
 }
