@@ -1,0 +1,15 @@
+{
+  "name": "Louvre",
+  "short_name": "Louvre",
+  "display": "standalone",
+  "scope": "./",
+  "start_url": "./",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 {
   "name": "Louvre",
-  "version": "1.0.2",
+  "version": "2.0.0",
   "ProductName": "Louvre",
   "description": "Simple photo/video browser that allows you to shuffle",
   "author": "Jerry Li",
@@ -25,6 +25,7 @@
     "@angular/platform-browser": "^21.1.5",
     "@angular/platform-browser-dynamic": "^21.1.5",
     "@angular/router": "^21.1.5",
+    "@angular/service-worker": "^21.1.5",
     "@fontsource/material-icons": "^5.2.7",
     "@fontsource/roboto": "^5.2.9",
     "@vladmandic/human": "^3.3.6",
