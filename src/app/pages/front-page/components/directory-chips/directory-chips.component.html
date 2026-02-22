@@ -1,10 +1,12 @@
 <div class="flex-container align-items-center">
-  @for( part of parsedPaths(); track part; let last = $last){
-    @if(last){
-      <mat-chip style="font-weight: bold;">{{ getChipTitle(part) }}</mat-chip>
+  @for (part of parsedPaths(); track part; let last = $last) {
+    @if (last) {
+      <mat-chip style="font-weight: bold">{{ getChipTitle(part) }}</mat-chip>
     } @else {
-      <mat-chip style="cursor: pointer;" (click)="goToDirectory(part)">{{ getChipTitle(part) }}</mat-chip>
-      <span style="margin: 0 8px;">/</span>
+      <mat-chip style="cursor: pointer" (click)="goToDirectory(part)">{{
+        getChipTitle(part)
+      }}</mat-chip>
+      <span style="margin: 0 8px">/</span>
     }
   }
 </div>

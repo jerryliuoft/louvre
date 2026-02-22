@@ -4,7 +4,6 @@ import { FileSystemService } from './file-system.service';
 import { FaceRecognitionService } from './face-recognition.service';
 import { get, set } from 'idb-keyval';
 
-
 export interface RecentDirectory {
   name: string;
   handle: FileSystemDirectoryHandle;
@@ -38,20 +37,19 @@ export class FilesService {
   public targetFaceDescriptor = signal<Float32Array | null>(null);
 
   public isScanningFaces = signal(false);
-  public scanProgress = signal<{current: number, total: number} | null>(null);
-
+  public scanProgress = signal<{ current: number; total: number } | null>(null);
 
   public imagesOrdered = computed(() => {
     const filter = this.subPathFilter();
     let raw_files = this.files_raw();
-    
+
     // Apply face filter if set
     const targetFace = this.targetFaceDescriptor();
     if (targetFace) {
-      raw_files = raw_files.filter(f => {
-         const descriptorsToSearch = f.faces?.map((face: any) => face.descriptor);
-         if (!descriptorsToSearch) return false;
-         return this.faceRecognitionService.hasMatch(targetFace, descriptorsToSearch);
+      raw_files = raw_files.filter((f) => {
+        const descriptorsToSearch = f.faces?.map((face: any) => face.descriptor);
+        if (!descriptorsToSearch) return false;
+        return this.faceRecognitionService.hasMatch(targetFace, descriptorsToSearch);
       });
     }
 
@@ -61,34 +59,37 @@ export class FilesService {
     // Only return images that live exactly inside the filtered subfolder
     // Only return images that live exactly inside the filtered subfolder
     // OR any of its nested folders.
-    return raw_files.filter(f => f.path.startsWith(filter + '/'));
+    return raw_files.filter((f) => f.path.startsWith(filter + '/'));
   });
 
   public uniqueFaces = computed(() => {
     // Generate a unique list of face descriptors for the side panel gallery
     // O(n*m) simple clustering, where n is faces and m is unique faces
-    const unique: { descriptor: Float32Array, file: FileWithType, box?: any, count: number }[] = [];
+    const unique: { descriptor: Float32Array; file: FileWithType; box?: any; count: number }[] = [];
     const files = this.files_original(); // We extract faces from all files in the root dir
-    
+
     for (const file of files) {
       if (file.faces && file.faces.length > 0) {
-         for (const face of file.faces) {
-            // Check if this descriptor matches any we already found
-            const matchIndex = unique.findIndex(u => this.faceRecognitionService.computeSimilarity(face.descriptor, u.descriptor) > 0.55);
-            if (matchIndex === -1) {
-               // New unique face found
-               unique.push({ descriptor: face.descriptor, file, box: face.box, count: 1 });
-            } else {
-               // Known face found, increment count
-               unique[matchIndex].count++;
-            }
-         }
+        for (const face of file.faces) {
+          // Check if this descriptor matches any we already found
+          const matchIndex = unique.findIndex(
+            (u) =>
+              this.faceRecognitionService.computeSimilarity(face.descriptor, u.descriptor) > 0.55,
+          );
+          if (matchIndex === -1) {
+            // New unique face found
+            unique.push({ descriptor: face.descriptor, file, box: face.box, count: 1 });
+          } else {
+            // Known face found, increment count
+            unique[matchIndex].count++;
+          }
+        }
       }
     }
-    
+
     // Sort by most frequent faces
     unique.sort((a, b) => b.count - a.count);
-    
+
     return unique;
   });
 
@@ -100,7 +101,7 @@ export class FilesService {
       return dirs;
     }
     // Only return directories that strictly match the selected subfolder
-    // or are children of it. Since the chips build up absolute relative 
+    // or are children of it. Since the chips build up absolute relative
     // paths from the root, we check if the path starts with the filter.
     return dirs.filter(([path, _]) => path === filter || path.startsWith(filter + '/'));
   });
@@ -111,18 +112,17 @@ export class FilesService {
     return parts[parts.length - 1];
   });
   public isLoading = signal(false);
-  public moveProgress = signal<{current: number, total: number} | null>(null);
+  public moveProgress = signal<{ current: number; total: number } | null>(null);
   public recentDirectories = signal<RecentDirectory[]>([]);
   public moveDestinations = signal<RecentDirectory[]>([]);
 
   constructor(
     private fileSystemService: FileSystemService,
-    private faceRecognitionService: FaceRecognitionService
+    private faceRecognitionService: FaceRecognitionService,
   ) {
     this.loadRecentDirectories();
     this.loadMoveDestinations();
   }
-
 
   private async loadRecentDirectories() {
     try {
@@ -173,9 +173,9 @@ export class FilesService {
   async pickMoveDestination() {
     try {
       const handle = await this.fileSystemService.openDirectory();
-      if(handle) {
-          await this.saveMoveDestination(handle);
-          await this.moveCurrentFolder(handle);
+      if (handle) {
+        await this.saveMoveDestination(handle);
+        await this.moveCurrentFolder(handle);
       }
     } catch (e) {
       console.error('Error picking move destination directory', e);
@@ -184,59 +184,73 @@ export class FilesService {
 
   async moveCurrentFolder(destRootHandle: FileSystemDirectoryHandle) {
     const currentSubPath = this.subPathFilter();
-    if (!currentSubPath || currentSubPath === '' || currentSubPath === '/' || currentSubPath === this.currentPath()) {
+    if (
+      !currentSubPath ||
+      currentSubPath === '' ||
+      currentSubPath === '/' ||
+      currentSubPath === this.currentPath()
+    ) {
       console.error('Cannot move the root directory.');
       return;
     }
 
     this.isLoading.set(true);
     try {
-        const options: FileSystemHandlePermissionDescriptor = { mode: 'readwrite' };
-        if ((await destRootHandle.queryPermission(options)) !== 'granted') {
-            if ((await destRootHandle.requestPermission(options)) !== 'granted') {
-                console.warn('Permission denied for move destination directory');
-                return;
-            }
+      const options: FileSystemHandlePermissionDescriptor = { mode: 'readwrite' };
+      if ((await destRootHandle.queryPermission(options)) !== 'granted') {
+        if ((await destRootHandle.requestPermission(options)) !== 'granted') {
+          console.warn('Permission denied for move destination directory');
+          return;
         }
-        
-        let rootHandle: FileSystemDirectoryHandle | null = null;
-        for (const recent of this.recentDirectories()) {
-           if (recent.name === this.currentPath()) {
-              rootHandle = recent.handle;
-              break;
-           }
+      }
+
+      let rootHandle: FileSystemDirectoryHandle | null = null;
+      for (const recent of this.recentDirectories()) {
+        if (recent.name === this.currentPath()) {
+          rootHandle = recent.handle;
+          break;
         }
+      }
 
-        if (!rootHandle) {
-             console.error('Could not find root directory handle for move operation');
-             return;
-        }
-        
-        const parts = currentSubPath.split('/');
-        const sourceDirName = parts.pop()!;
-        const parentPath = parts.join('/');
-        
-        let sourceParentHandle = rootHandle;
-        if (parentPath) {
-             sourceParentHandle = await this.fileSystemService.getDirectoryHandleByPath(rootHandle, parentPath);
-        }
+      if (!rootHandle) {
+        console.error('Could not find root directory handle for move operation');
+        return;
+      }
 
-        this.moveProgress.set({current: 0, total: 0});
-        await this.fileSystemService.moveDirectory(sourceParentHandle, sourceDirName, destRootHandle, (copied, total) => {
-            this.moveProgress.set({current: copied, total});
-        });
-        await this.saveMoveDestination(destRootHandle);
-        
-        const remainingFiles = this.files_raw().filter((f: FileWithType) => !f.path.startsWith(currentSubPath + '/'));
-        this.updateFileList(remainingFiles);
-        this.files_original.set([...remainingFiles]);
-        
-        const cacheKey = `dir_cache_${rootHandle.name}`;
-        await set(cacheKey, remainingFiles);
+      const parts = currentSubPath.split('/');
+      const sourceDirName = parts.pop()!;
+      const parentPath = parts.join('/');
 
-        const newPathSegment = parentPath ? parentPath : this.currentPath();
-        this.setNewDirectory(newPathSegment);
+      let sourceParentHandle = rootHandle;
+      if (parentPath) {
+        sourceParentHandle = await this.fileSystemService.getDirectoryHandleByPath(
+          rootHandle,
+          parentPath,
+        );
+      }
 
+      this.moveProgress.set({ current: 0, total: 0 });
+      await this.fileSystemService.moveDirectory(
+        sourceParentHandle,
+        sourceDirName,
+        destRootHandle,
+        (copied, total) => {
+          this.moveProgress.set({ current: copied, total });
+        },
+      );
+      await this.saveMoveDestination(destRootHandle);
+
+      const remainingFiles = this.files_raw().filter(
+        (f: FileWithType) => !f.path.startsWith(currentSubPath + '/'),
+      );
+      this.updateFileList(remainingFiles);
+      this.files_original.set([...remainingFiles]);
+
+      const cacheKey = `dir_cache_${rootHandle.name}`;
+      await set(cacheKey, remainingFiles);
+
+      const newPathSegment = parentPath ? parentPath : this.currentPath();
+      this.setNewDirectory(newPathSegment);
     } catch (e) {
       console.error('Error moving directory', e);
     } finally {
@@ -278,7 +292,6 @@ export class FilesService {
       await this.saveRecentDirectory(handle); // bump to top
       await this.loadDirectory(handle);
       this.setNewDirectory(handle.name);
-
     } catch (e) {
       console.error('Error loading recent directory', e);
     } finally {
@@ -288,10 +301,10 @@ export class FilesService {
 
   setNewDirectory(path: string) {
     if (path === this.currentPath() || path === 'undefined') {
-       this.subPathFilter.set(''); // Root level
+      this.subPathFilter.set(''); // Root level
     } else {
-       // Since the router passes the full relative path, we can just set it
-       this.subPathFilter.set(path);
+      // Since the router passes the full relative path, we can just set it
+      this.subPathFilter.set(path);
     }
   }
 
@@ -303,7 +316,7 @@ export class FilesService {
 
   private async loadDirectory(dirHandle: FileSystemDirectoryHandle) {
     const cacheKey = `dir_cache_${dirHandle.name}`;
-    
+
     // 1. Try Cache First
     try {
       const cached = await get<FileWithType[]>(cacheKey);
@@ -311,7 +324,9 @@ export class FilesService {
         this.files_original.set([...cached]);
         this.updateFileList(cached);
         // Kick off background sync for new files AND missing face embeddings
-        this.backgroundSync(dirHandle, cacheKey, cached).catch(e => console.error('Background sync failed', e));
+        this.backgroundSync(dirHandle, cacheKey, cached).catch((e) =>
+          console.error('Background sync failed', e),
+        );
         return;
       }
     } catch (e) {
@@ -322,10 +337,9 @@ export class FilesService {
     await this.scanDirectoryAndCache(dirHandle, cacheKey);
   }
 
-
   private async scanDirectoryAndCache(dirHandle: FileSystemDirectoryHandle, cacheKey: string) {
     const files: FileWithType[] = [];
-    
+
     for await (const entry of this.fileSystemService.readDirectory(dirHandle)) {
       const parts = entry.handle.name.split('.');
       if (parts.length > 1 && parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES()) {
@@ -333,14 +347,14 @@ export class FilesService {
           name: entry.handle.name,
           path: entry.path,
           handle: entry.handle,
-          parentHandle: entry.parentHandle
+          parentHandle: entry.parentHandle,
         });
       }
     }
 
     this.files_original.set([...files]);
     this.updateFileList(files);
-    
+
     try {
       await set(cacheKey, files);
     } catch (e) {
@@ -348,9 +362,13 @@ export class FilesService {
     }
   }
 
-  private async backgroundSync(dirHandle: FileSystemDirectoryHandle, cacheKey: string, cachedFiles: FileWithType[] = []) {
+  private async backgroundSync(
+    dirHandle: FileSystemDirectoryHandle,
+    cacheKey: string,
+    cachedFiles: FileWithType[] = [],
+  ) {
     const files: FileWithType[] = [];
-    const cachedFileMap = new Map(cachedFiles.map(f => [f.path, f]));
+    const cachedFileMap = new Map(cachedFiles.map((f) => [f.path, f]));
 
     for await (const entry of this.fileSystemService.readDirectory(dirHandle)) {
       const parts = entry.handle.name.split('.');
@@ -361,7 +379,7 @@ export class FilesService {
           path: entry.path,
           handle: entry.handle,
           parentHandle: entry.parentHandle,
-          faces: cachedMatch?.faces
+          faces: cachedMatch?.faces,
         });
       }
     }
@@ -369,7 +387,7 @@ export class FilesService {
     // Replace the files
     this.files_original.set([...files]);
     this.updateFileList(files);
-    
+
     try {
       await set(cacheKey, files);
     } catch (e) {
@@ -379,30 +397,30 @@ export class FilesService {
 
   async startFaceScan() {
     if (this.isScanningFaces()) return;
-    
+
     // Find the handle for the current path
     let rootHandle: FileSystemDirectoryHandle | null = null;
     for (const recent of this.recentDirectories()) {
-       if (recent.name === this.currentPath()) {
-          rootHandle = recent.handle;
-          break;
-       }
+      if (recent.name === this.currentPath()) {
+        rootHandle = recent.handle;
+        break;
+      }
     }
 
     if (!rootHandle) {
-         console.warn('Could not find root directory handle for scanning faces');
-         return;
+      console.warn('Could not find root directory handle for scanning faces');
+      return;
     }
-    
+
     const cacheKey = `dir_cache_${rootHandle.name}`;
     this.isScanningFaces.set(true);
     try {
-        await this.backgroundFaceSync(rootHandle, cacheKey);
+      await this.backgroundFaceSync(rootHandle, cacheKey);
     } catch (e) {
-        console.error('Manual face scan failed', e);
+      console.error('Manual face scan failed', e);
     } finally {
-        this.isScanningFaces.set(false);
-        this.scanProgress.set(null);
+      this.isScanningFaces.set(false);
+      this.scanProgress.set(null);
     }
   }
 
@@ -410,32 +428,32 @@ export class FilesService {
     this.isLoading.set(true);
     let rootHandle: FileSystemDirectoryHandle | null = null;
     for (const recent of this.recentDirectories()) {
-       if (recent.name === this.currentPath()) {
-          rootHandle = recent.handle;
-          break;
-       }
+      if (recent.name === this.currentPath()) {
+        rootHandle = recent.handle;
+        break;
+      }
     }
 
     if (!rootHandle) {
-         console.warn('Could not find root directory handle for clearing faces');
-         this.isLoading.set(false);
-         return;
+      console.warn('Could not find root directory handle for clearing faces');
+      this.isLoading.set(false);
+      return;
     }
-    
+
     const cacheKey = `dir_cache_${rootHandle.name}`;
-    
+
     const currentFiles = [...this.files_raw()];
     for (let i = 0; i < currentFiles.length; i++) {
-        currentFiles[i] = { ...currentFiles[i], faces: undefined };
+      currentFiles[i] = { ...currentFiles[i], faces: undefined };
     }
-    
+
     this.files_original.set([...currentFiles]);
     this.updateFileList(currentFiles);
-    
+
     try {
-        await set(cacheKey, currentFiles);
+      await set(cacheKey, currentFiles);
     } catch (e) {
-        console.warn('Failed to update cache after clearing faces', e);
+      console.warn('Failed to update cache after clearing faces', e);
     }
     this.isLoading.set(false);
   }
@@ -449,48 +467,50 @@ export class FilesService {
     let hasUpdates = false;
 
     // Filter to those missing `faces`
-    const imagesToProcess = currentFiles.filter(f => f.name.match(/\.(jpg|jpeg|png|webp|avif)$/i) && !f.faces && f.handle);
-    this.scanProgress.set({current: 0, total: imagesToProcess.length});
+    const imagesToProcess = currentFiles.filter(
+      (f) => f.name.match(/\.(jpg|jpeg|png|webp|avif)$/i) && !f.faces && f.handle,
+    );
+    this.scanProgress.set({ current: 0, total: imagesToProcess.length });
     let processedCount = 0;
 
     // We process sequentially or in small batches to avoid blocking the main thread too heavily
     for (let i = 0; i < currentFiles.length; i++) {
-       const file = currentFiles[i];
-       
-       // Only process images (skip video for now since extracting individual frames is much heavier)
-       const isImage = file.name.match(/\.(jpg|jpeg|png|webp|avif)$/i);
-       
-       if (isImage && !file.faces && file.handle) {
-          try {
-             const fileData = await file.handle.getFile();
-             const faces = await this.faceRecognitionService.extractFacesFromFile(fileData);
-             
-             currentFiles[i] = {
-                ...file,
-                faces: faces
-             };
-             hasUpdates = true;
-          } catch (e) {
-             console.warn(`Failed to process faces for ${file.name}`, e);
-             // Mark as empty array so we don't try again next time
-             currentFiles[i] = { ...file, faces: [] };
-             hasUpdates = true;
-          } finally {
-             processedCount++;
-             this.scanProgress.set({current: processedCount, total: imagesToProcess.length});
-          }
-       }
+      const file = currentFiles[i];
+
+      // Only process images (skip video for now since extracting individual frames is much heavier)
+      const isImage = file.name.match(/\.(jpg|jpeg|png|webp|avif)$/i);
+
+      if (isImage && !file.faces && file.handle) {
+        try {
+          const fileData = await file.handle.getFile();
+          const faces = await this.faceRecognitionService.extractFacesFromFile(fileData);
+
+          currentFiles[i] = {
+            ...file,
+            faces: faces,
+          };
+          hasUpdates = true;
+        } catch (e) {
+          console.warn(`Failed to process faces for ${file.name}`, e);
+          // Mark as empty array so we don't try again next time
+          currentFiles[i] = { ...file, faces: [] };
+          hasUpdates = true;
+        } finally {
+          processedCount++;
+          this.scanProgress.set({ current: processedCount, total: imagesToProcess.length });
+        }
+      }
     }
 
     if (hasUpdates) {
-       this.files_original.set([...currentFiles]);
-       this.updateFileList(currentFiles);
-       try {
-           // Wait until IDB saves
-           await set(cacheKey, currentFiles);
-       } catch (e) {
-           console.warn('Failed to cache face embeddings', e);
-       }
+      this.files_original.set([...currentFiles]);
+      this.updateFileList(currentFiles);
+      try {
+        // Wait until IDB saves
+        await set(cacheKey, currentFiles);
+      } catch (e) {
+        console.warn('Failed to cache face embeddings', e);
+      }
     }
   }
 
@@ -505,7 +525,7 @@ export class FilesService {
       // entry.path is like "folder/file.jpg" or "file.jpg"
       const lastSlash = img.path.lastIndexOf('/');
       const parentDir = lastSlash > -1 ? img.path.substring(0, lastSlash) : '/';
-      
+
       const existing_images = imageByPath.get(parentDir) ?? [];
       imageByPath.set(parentDir, [...existing_images, img]);
     });
@@ -516,9 +536,9 @@ export class FilesService {
     this.isLoading.set(true);
     // Timeout to yield UI thread
     setTimeout(() => {
-        this.randomizeImages();
-        this.randomizeDirecotires();
-        this.isLoading.set(false);
+      this.randomizeImages();
+      this.randomizeDirecotires();
+      this.isLoading.set(false);
     }, 0);
   }
 
@@ -535,13 +555,15 @@ export class FilesService {
       return;
     }
     try {
-        await file.parentHandle.removeEntry(file.name);
-        // Update state
-        const remaining = this.files_raw().filter((f: FileWithType) => f !== file);
-        this.updateFileList(remaining);
-        this.files_original.update((original: FileWithType[]) => original.filter((f: FileWithType) => f !== file));
+      await file.parentHandle.removeEntry(file.name);
+      // Update state
+      const remaining = this.files_raw().filter((f: FileWithType) => f !== file);
+      this.updateFileList(remaining);
+      this.files_original.update((original: FileWithType[]) =>
+        original.filter((f: FileWithType) => f !== file),
+      );
     } catch (e) {
-        console.error('Failed to delete file', e);
+      console.error('Failed to delete file', e);
     }
   }
 
@@ -564,10 +586,7 @@ export class FilesService {
       currentIndex--;
 
       // And swap it with the current element.
-      [array[currentIndex], array[randomIndex]] = [
-        array[randomIndex],
-        array[currentIndex],
-      ];
+      [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
     }
   }
 }

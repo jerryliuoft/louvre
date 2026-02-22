@@ -29,7 +29,7 @@ export class MediaContainerComponent {
   constructor(
     private displayService: DisplayService,
     protected imageViewService: ImageViewService,
-    private filesService: FilesService
+    private filesService: FilesService,
   ) {}
 
   isImg() {

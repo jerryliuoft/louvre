@@ -4,7 +4,7 @@ import { ObjectUrlService } from '../services/object-url.service';
 @Pipe({
   name: 'objectUrl',
   standalone: true,
-  pure: false
+  pure: false,
 })
 export class ObjectUrlPipe implements PipeTransform, OnDestroy {
   private currentHandle?: FileSystemFileHandle;
@@ -13,7 +13,7 @@ export class ObjectUrlPipe implements PipeTransform, OnDestroy {
 
   constructor(
     private objectUrlService: ObjectUrlService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
   ) {}
 
   transform(handle: FileSystemFileHandle | undefined): string | null {
@@ -29,7 +29,7 @@ export class ObjectUrlPipe implements PipeTransform, OnDestroy {
     this.cleanup();
     this.currentHandle = handle;
 
-    this.objectUrlService.getUrl(handle).then(url => {
+    this.objectUrlService.getUrl(handle).then((url) => {
       if (this.currentHandle === handle && !this.disposed) {
         this.currentUrl = url;
         this.cdr.markForCheck();

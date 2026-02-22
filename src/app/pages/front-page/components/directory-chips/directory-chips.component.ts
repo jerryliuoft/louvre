@@ -13,7 +13,7 @@ import { FilesService } from '../../../../services/files.service';
 export class DirectoryChipsComponent {
   path = input<string>('');
   filesService = inject(FilesService);
-  
+
   protected parsedPaths = computed(() => {
     // change 1/2/3 to an array [1, 1/2, 1/2/3]
 
@@ -24,13 +24,13 @@ export class DirectoryChipsComponent {
       paths.push(cur_path.substring(0, i - 1));
     }
     paths.push(cur_path);
-    const result = paths.filter(p => p !== '');
+    const result = paths.filter((p) => p !== '');
     return result.length ? result : ['/'];
   });
 
   getChipTitle(folder_path: string) {
     if (folder_path === '/') return 'Root';
-    
+
     // Remove trailing slash if present before splitting
     const cleanPath = folder_path.endsWith('/') ? folder_path.slice(0, -1) : folder_path;
     return cleanPath.split('/').pop() || cleanPath;
@@ -40,4 +40,3 @@ export class DirectoryChipsComponent {
     this.filesService.setNewDirectory(folder_path);
   }
 }
-

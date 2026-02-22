@@ -20,7 +20,7 @@
     height: 32px;
     line-height: 32px;
   }
-  
+
   &:hover {
     background-color: rgba(0, 0, 0, 0.8) !important;
   }
@@ -54,10 +54,13 @@
     border-radius: 4px;
     overflow: hidden;
     opacity: 0.5;
-    transition: opacity 0.2s, transform 0.2s;
+    transition:
+      opacity 0.2s,
+      transform 0.2s;
     border: 2px solid transparent;
 
-    img, video {
+    img,
+    video {
       height: 100%;
       width: 100%;
       object-fit: cover;

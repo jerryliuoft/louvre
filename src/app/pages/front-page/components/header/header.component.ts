@@ -32,7 +32,7 @@ export class HeaderComponent {
   constructor(
     protected filesService: FilesService,
     protected displayService: DisplayService,
-    public pwaService: PwaService
+    public pwaService: PwaService,
   ) {}
   async selectDirectory() {
     this.filesService.pickNewDirectory();
@@ -48,7 +48,7 @@ export class HeaderComponent {
     this.displayService.displayType.set(type);
     this.displayService.pageIndex.set(0);
   }
-  
+
   clearFaceFilter() {
     this.filesService.targetFaceDescriptor.set(null);
     this.setDisplayType('folder');

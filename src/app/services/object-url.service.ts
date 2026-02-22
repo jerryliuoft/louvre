@@ -1,14 +1,17 @@
 import { Injectable } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ObjectUrlService {
-  private cache = new Map<FileSystemFileHandle, { url: string, refCount: number, promise?: Promise<string> }>();
+  private cache = new Map<
+    FileSystemFileHandle,
+    { url: string; refCount: number; promise?: Promise<string> }
+  >();
 
   async getUrl(handle: FileSystemFileHandle): Promise<string> {
     let existing = this.cache.get(handle);
-    
+
     if (existing) {
       existing.refCount++;
       if (existing.promise) {
@@ -18,7 +21,7 @@ export class ObjectUrlService {
     }
 
     // Need to generate
-    const promise = handle.getFile().then(file => {
+    const promise = handle.getFile().then((file) => {
       const url = URL.createObjectURL(file);
       const cacheRef = this.cache.get(handle);
       if (cacheRef) {

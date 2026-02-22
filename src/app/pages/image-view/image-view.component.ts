@@ -1,12 +1,4 @@
-import {
-  Component,
-  ElementRef,
-  inject,
-  input,
-  signal,
-  ViewChild,
-  effect,
-} from '@angular/core';
+import { Component, ElementRef, inject, input, signal, ViewChild, effect } from '@angular/core';
 import { NgStyle } from '@angular/common';
 import { HeaderComponent } from './components/header/header.component';
 import { MatDialogRef } from '@angular/material/dialog';
@@ -33,21 +25,14 @@ export class ImageViewComponent {
   pointY = 0;
   start = { x: 0, y: 0 };
   customStyle = signal({
-    transform:
-      'translate(' +
-      this.pointX +
-      'px, ' +
-      this.pointY +
-      'px) scale(' +
-      this.scale +
-      ')',
+    transform: 'translate(' + this.pointX + 'px, ' + this.pointY + 'px) scale(' + this.scale + ')',
   });
 
   constructor() {
     effect(() => {
       // depend on file() so this runs when the user hits next/prev in the Modal
       const currentFile = this.file();
-      
+
       this.scale = 1;
       this.pointX = 0;
       this.pointY = 0;

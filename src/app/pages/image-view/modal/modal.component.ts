@@ -18,21 +18,21 @@ import { ObjectUrlPipe } from '../../../pipes/object-url.pipe';
 export class ModalComponent implements OnInit {
   readonly data = inject<{ file: FileWithType }>(MAT_DIALOG_DATA);
   readonly filesService = inject(FilesService);
-  
+
   currentFile = signal<FileWithType | null>(null);
-  
+
   ngOnInit() {
     this.currentFile.set(this.data.file);
   }
-  
+
   get filmstripWindow(): FileWithType[] {
     const files = this.filesService.files_original();
     const current = this.currentFile();
     if (!current) return [];
-    
+
     const idx = files.findIndex((f: FileWithType) => f.path === current.path);
     if (idx === -1) return [];
-    
+
     // Create a sliding window of 9 items total (current +/- 4)
     const start = Math.max(0, idx - 4);
     const end = Math.min(files.length, idx + 5);
@@ -43,23 +43,23 @@ export class ModalComponent implements OnInit {
     const parts = file.name.split('.');
     const SUPPORTED_VIDEO_TYPES: any = { webm: true, mp4: true, mkv: true, ogg: true, mov: true };
     if (parts.length > 1) {
-      return (parts.at(-1)!.toLocaleLowerCase() in SUPPORTED_VIDEO_TYPES);
+      return parts.at(-1)!.toLocaleLowerCase() in SUPPORTED_VIDEO_TYPES;
     }
     return false;
   }
-  
+
   hasPrev() {
     const files = this.filesService.files_original();
     const idx = files.findIndex((f: FileWithType) => f.path === this.currentFile()?.path);
     return idx > 0;
   }
-  
+
   hasNext() {
     const files = this.filesService.files_original();
     const idx = files.findIndex((f: FileWithType) => f.path === this.currentFile()?.path);
     return idx >= 0 && idx < files.length - 1;
   }
-  
+
   prev() {
     const files = this.filesService.files_original();
     const idx = files.findIndex((f: FileWithType) => f.path === this.currentFile()?.path);
@@ -67,7 +67,7 @@ export class ModalComponent implements OnInit {
       this.currentFile.set(files[idx - 1]);
     }
   }
-  
+
   next() {
     const files = this.filesService.files_original();
     const idx = files.findIndex((f: FileWithType) => f.path === this.currentFile()?.path);

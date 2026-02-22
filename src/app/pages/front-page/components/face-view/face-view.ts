@@ -15,15 +15,15 @@ import { ObjectUrlPipe } from '../../../../pipes/object-url.pipe';
     MatIconModule,
     FaceThumbnailComponent,
     ObjectUrlPipe,
-    MatTooltipModule
+    MatTooltipModule,
   ],
   templateUrl: './face-view.html',
-  styleUrls: ['./face-view.scss']
+  styleUrls: ['./face-view.scss'],
 })
 export class FaceViewComponent {
   constructor(
     public filesService: FilesService,
-    public displayService: DisplayService
+    public displayService: DisplayService,
   ) {}
 
   selectFace(descriptor: Float32Array) {

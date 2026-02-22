@@ -3,25 +3,25 @@
     <app-display-configs />
   </mat-sidenav>
   <mat-sidenav-content class="background-color-dark">
-    <app-header
-      class="header-sticky"
-      (toggleMenuEvent)="sidenav.toggle()"
-    ></app-header>
-    @if(filesService.isLoading()){
-    <div class="flex-container align-items-center justify-content-center">
-      <div style="display: flex; flex-direction: column; align-items: center; gap: 16px;">
-        <mat-spinner [diameter]="40"></mat-spinner>
-        @if(filesService.moveProgress(); as progress) {
-          <span style="color: white;">Moving files: {{ progress.current }} / {{ progress.total }}</span>
-        }
+    <app-header class="header-sticky" (toggleMenuEvent)="sidenav.toggle()"></app-header>
+    @if (filesService.isLoading()) {
+      <div class="flex-container align-items-center justify-content-center">
+        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px">
+          <mat-spinner [diameter]="40"></mat-spinner>
+          @if (filesService.moveProgress(); as progress) {
+            <span style="color: white"
+              >Moving files: {{ progress.current }} / {{ progress.total }}</span
+            >
+          }
+        </div>
       </div>
-    </div>
-    } @if(displayService.displayType() === "item"){
-    <app-item-view></app-item-view>
-    } @else if(displayService.displayType() === "faces"){
-    <app-face-view></app-face-view>
+    }
+    @if (displayService.displayType() === 'item') {
+      <app-item-view></app-item-view>
+    } @else if (displayService.displayType() === 'faces') {
+      <app-face-view></app-face-view>
     } @else {
-    <app-directory-view></app-directory-view>
+      <app-directory-view></app-directory-view>
     }
   </mat-sidenav-content>
 </mat-sidenav-container>

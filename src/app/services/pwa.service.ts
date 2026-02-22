@@ -1,7 +1,7 @@
 import { Injectable, signal } from '@angular/core';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PwaService {
   canInstall = signal<boolean>(false);

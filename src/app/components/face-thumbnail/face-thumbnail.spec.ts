@@ -8,9 +8,8 @@ describe('FaceThumbnail', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [FaceThumbnail]
-    })
-    .compileComponents();
+      imports: [FaceThumbnail],
+    }).compileComponents();
 
     fixture = TestBed.createComponent(FaceThumbnail);
     component = fixture.componentInstance;

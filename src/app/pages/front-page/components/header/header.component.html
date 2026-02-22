@@ -10,70 +10,91 @@
       <mat-button-toggle value="folder">Folder</mat-button-toggle>
       <mat-button-toggle value="item">All</mat-button-toggle>
       <mat-button-toggle value="faces">
-        <div style="display: flex; align-items: center; gap: 4px;">
-          <mat-icon style="font-size: 18px; width: 18px; height: 18px;" [style.color]="filesService.targetFaceDescriptor() ? '#ffd740' : 'inherit'">{{ filesService.targetFaceDescriptor() ? 'face_retouching_natural' : 'person' }}</mat-icon>People
+        <div style="display: flex; align-items: center; gap: 4px">
+          <mat-icon
+            style="font-size: 18px; width: 18px; height: 18px"
+            [style.color]="filesService.targetFaceDescriptor() ? '#ffd740' : 'inherit'"
+            >{{
+              filesService.targetFaceDescriptor() ? 'face_retouching_natural' : 'person'
+            }}</mat-icon
+          >People
         </div>
       </mat-button-toggle>
     </mat-button-toggle-group>
 
-    @if(filesService.targetFaceDescriptor()) {
-      <button 
-        mat-flat-button 
-        style="margin-left: 8px; border-radius: 16px; background-color: rgba(255, 215, 64, 0.15); color: #ffd740;" 
+    @if (filesService.targetFaceDescriptor()) {
+      <button
+        mat-flat-button
+        style="
+          margin-left: 8px;
+          border-radius: 16px;
+          background-color: rgba(255, 215, 64, 0.15);
+          color: #ffd740;
+        "
         (click)="clearFaceFilter()"
       >
-        <mat-icon style="margin-right: 4px; font-size: 20px; width: 20px; height: 20px;">person_off</mat-icon>
+        <mat-icon style="margin-right: 4px; font-size: 20px; width: 20px; height: 20px"
+          >person_off</mat-icon
+        >
         Clear Face Filter
       </button>
     }
 
-    <button
-      mat-icon-button
-      aria-label="Icon button to shuffle images"
-      (click)="randomize()"
-    >
+    <button mat-icon-button aria-label="Icon button to shuffle images" (click)="randomize()">
       <mat-icon>shuffle</mat-icon>
     </button>
 
-    @if(pwaService.canInstall()) {
-      <button 
-        mat-flat-button 
-        style="margin-left: 8px; border-radius: 16px; background-color: rgba(33, 150, 243, 0.15); color: #64b5f6;" 
+    @if (pwaService.canInstall()) {
+      <button
+        mat-flat-button
+        style="
+          margin-left: 8px;
+          border-radius: 16px;
+          background-color: rgba(33, 150, 243, 0.15);
+          color: #64b5f6;
+        "
         (click)="pwaService.install()"
       >
-        <mat-icon style="margin-right: 4px; font-size: 20px; width: 20px; height: 20px;">download</mat-icon>
+        <mat-icon style="margin-right: 4px; font-size: 20px; width: 20px; height: 20px"
+          >download</mat-icon
+        >
         Install App
       </button>
     }
 
-
-    @if(filesService.subPathFilter() && filesService.subPathFilter() !== '' && filesService.subPathFilter() !== 'undefined' && filesService.subPathFilter() !== filesService.currentPath() && filesService.subPathFilter() !== '/') {
-    <button
-      mat-icon-button
-      [aria-label]="'Move folder ' + filesService.currentFolderName()"
-      [matMenuTriggerFor]="moveMenu"
-    >
-      <mat-icon>drive_file_move</mat-icon>
-    </button>
-    <mat-menu #moveMenu="matMenu">
-      <div mat-menu-item disabled style="opacity: 1; color: white; cursor: default;">
-        <strong>Moving:</strong> {{ filesService.currentFolderName() }}
-      </div>
-      <mat-divider></mat-divider>
-      <button mat-menu-item (click)="filesService.pickMoveDestination()">
-        <mat-icon>create_new_folder</mat-icon>
-        <span>Pick new destination...</span>
+    @if (
+      filesService.subPathFilter() &&
+      filesService.subPathFilter() !== '' &&
+      filesService.subPathFilter() !== 'undefined' &&
+      filesService.subPathFilter() !== filesService.currentPath() &&
+      filesService.subPathFilter() !== '/'
+    ) {
+      <button
+        mat-icon-button
+        [aria-label]="'Move folder ' + filesService.currentFolderName()"
+        [matMenuTriggerFor]="moveMenu"
+      >
+        <mat-icon>drive_file_move</mat-icon>
       </button>
-      @if (filesService.moveDestinations().length > 0) {
+      <mat-menu #moveMenu="matMenu">
+        <div mat-menu-item disabled style="opacity: 1; color: white; cursor: default">
+          <strong>Moving:</strong> {{ filesService.currentFolderName() }}
+        </div>
         <mat-divider></mat-divider>
-        @for (dest of filesService.moveDestinations(); track dest.name) {
-          <button mat-menu-item (click)="filesService.moveCurrentFolder(dest.handle)">
-            <mat-icon>folder</mat-icon>
-            <span>Move to {{ dest.name }}</span>
-          </button>
+        <button mat-menu-item (click)="filesService.pickMoveDestination()">
+          <mat-icon>create_new_folder</mat-icon>
+          <span>Pick new destination...</span>
+        </button>
+        @if (filesService.moveDestinations().length > 0) {
+          <mat-divider></mat-divider>
+          @for (dest of filesService.moveDestinations(); track dest.name) {
+            <button mat-menu-item (click)="filesService.moveCurrentFolder(dest.handle)">
+              <mat-icon>folder</mat-icon>
+              <span>Move to {{ dest.name }}</span>
+            </button>
+          }
         }
-      }
-    </mat-menu>
+      </mat-menu>
     }
     <button
       mat-icon-button

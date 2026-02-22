@@ -3,11 +3,11 @@ import { Human, Config } from '@vladmandic/human';
 
 export interface FaceDescriptor {
   descriptor: Float32Array;
-  box: { x: number, y: number, width: number, height: number };
+  box: { x: number; y: number; width: number; height: number };
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FaceRecognitionService {
   public isReady = signal<boolean>(false);
@@ -16,18 +16,18 @@ export class FaceRecognitionService {
 
   private human: Human | null = null;
 
-  constructor() { }
+  constructor() {}
 
   async initialize() {
     if (this.isReady() || this.isInitializing()) return;
-    
+
     this.isInitializing.set(true);
     this.errorState.set(null);
 
     try {
       // The models are stored in our assets folder
       const MODEL_URL = '/assets/models/human';
-      
+
       const config: Partial<Config> = {
         modelBasePath: MODEL_URL,
         filter: { enabled: false }, // we don't need visual filters
@@ -45,7 +45,7 @@ export class FaceRecognitionService {
         body: { enabled: false },
         hand: { enabled: false },
         object: { enabled: false },
-        segmentation: { enabled: false }
+        segmentation: { enabled: false },
       };
 
       this.human = new Human(config);
@@ -66,7 +66,9 @@ export class FaceRecognitionService {
    * @param imageElement The HTMLImageElement, HTMLVideoElement, or HTMLCanvasElement
    * @returns An array of face descriptors and their bounding boxes
    */
-  async extractFaces(imageElement: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement): Promise<FaceDescriptor[]> {
+  async extractFaces(
+    imageElement: HTMLImageElement | HTMLVideoElement | HTMLCanvasElement,
+  ): Promise<FaceDescriptor[]> {
     if (!this.isReady()) {
       await this.initialize();
     }
@@ -75,15 +77,15 @@ export class FaceRecognitionService {
       const result = await this.human!.detect(imageElement);
 
       return result.face
-        .filter(f => f.embedding && f.boxScore && f.boxScore > 0.6)
-        .map(f => ({
+        .filter((f) => f.embedding && f.boxScore && f.boxScore > 0.6)
+        .map((f) => ({
           descriptor: new Float32Array(f.embedding!),
           box: {
             x: f.box[0],
             y: f.box[1],
             width: f.box[2],
-            height: f.box[3]
-          }
+            height: f.box[3],
+          },
         }));
     } catch (e) {
       console.error('Error extracting faces:', e);
@@ -128,7 +130,11 @@ export class FaceRecognitionService {
    * Checks if a descriptor matches any descriptor in a target list,
    * using a given similarity threshold (default 0.55).
    */
-  hasMatch(targetDescriptor: Float32Array, descriptorsToSearch: Float32Array[], threshold: number = 0.55): boolean {
+  hasMatch(
+    targetDescriptor: Float32Array,
+    descriptorsToSearch: Float32Array[],
+    threshold: number = 0.55,
+  ): boolean {
     for (const desc of descriptorsToSearch) {
       const similarity = this.computeSimilarity(targetDescriptor, desc);
       if (similarity > threshold) {

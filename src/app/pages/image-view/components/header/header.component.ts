@@ -21,7 +21,7 @@ import { FaceThumbnailComponent } from '../../../../components/face-thumbnail/fa
     MatIconModule,
     MatTooltipModule,
     MatMenuModule,
-    FaceThumbnailComponent
+    FaceThumbnailComponent,
   ],
   templateUrl: './header.component.html',
 })

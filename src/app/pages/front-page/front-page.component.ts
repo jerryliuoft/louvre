@@ -27,20 +27,22 @@ import { FaceViewComponent } from './components/face-view/face-view';
 export class FrontPageComponent implements OnInit {
   constructor(
     protected displayService: DisplayService,
-    protected filesService: FilesService
+    protected filesService: FilesService,
   ) {
-    effect(() => {
-      const currentPath = this.filesService.currentPath();
-      const subPathFilter = this.filesService.subPathFilter();
-      
-      if (subPathFilter && subPathFilter !== '' && subPathFilter !== currentPath) {
-        this.displayService.displayType.set('item');
-      } else {
-        this.displayService.displayType.set('folder');
-      }
-    }, { allowSignalWrites: true });
+    effect(
+      () => {
+        const currentPath = this.filesService.currentPath();
+        const subPathFilter = this.filesService.subPathFilter();
+
+        if (subPathFilter && subPathFilter !== '' && subPathFilter !== currentPath) {
+          this.displayService.displayType.set('item');
+        } else {
+          this.displayService.displayType.set('folder');
+        }
+      },
+      { allowSignalWrites: true },
+    );
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void {}
 }

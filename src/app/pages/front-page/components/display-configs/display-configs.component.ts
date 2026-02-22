@@ -26,9 +26,7 @@ export class DisplayConfigsComponent {
   ]);
   protected previewNum = [5, 10, 15, 0];
 
-  constructor(
-    protected displayService: DisplayService
-  ) {}
+  constructor(protected displayService: DisplayService) {}
 
   updateImageHeight(height: string) {
     this.displayService.imageConfigs.update((config) => {

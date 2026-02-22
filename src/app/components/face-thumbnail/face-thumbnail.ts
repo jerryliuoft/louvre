@@ -6,6 +6,4 @@ import { Component } from '@angular/core';
   templateUrl: './face-thumbnail.html',
   styleUrl: './face-thumbnail.scss',
 })
-export class FaceThumbnail {
-
-}
+export class FaceThumbnail {}

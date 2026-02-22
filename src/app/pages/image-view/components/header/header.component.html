@@ -15,7 +15,7 @@
     >
       <mat-icon>folder_open</mat-icon>
     </button>
-    
+
     @if (file().faces && file().faces!.length > 0) {
       <button
         mat-icon-button
@@ -29,9 +29,16 @@
 
       <mat-menu #faceMenu="matMenu" xPosition="before">
         @for (face of file().faces; track $index) {
-          <button mat-menu-item (click)="filterByFaces(face.descriptor)" style="display: flex; align-items: center; gap: 8px; width: auto; padding: 4px 16px;">
-            <div style="width: 40px; height: 40px;">
-              <app-face-thumbnail [fileHandle]="file().handle!" [box]="face.box"></app-face-thumbnail>
+          <button
+            mat-menu-item
+            (click)="filterByFaces(face.descriptor)"
+            style="display: flex; align-items: center; gap: 8px; width: auto; padding: 4px 16px"
+          >
+            <div style="width: 40px; height: 40px">
+              <app-face-thumbnail
+                [fileHandle]="file().handle!"
+                [box]="face.box"
+              ></app-face-thumbnail>
             </div>
             <span>Person {{ $index + 1 }}</span>
           </button>
@@ -46,7 +53,7 @@
       aria-label="Icon button to delete the current image"
       mat-tooltip="Delete file"
       color="warn"
-      style="color: #f44336;"
+      style="color: #f44336"
     >
       <mat-icon>delete</mat-icon>
     </button>
