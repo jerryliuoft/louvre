@@ -41,6 +41,8 @@ export class HeaderComponent {
   }
 
   async deleteFile() {
+    const confirmed = window.confirm('Are you sure you want to permanently delete this file?');
+    if (!confirmed) return;
     await this.filesService.deleteFile(this.file());
     this.dialogRef.close();
   }

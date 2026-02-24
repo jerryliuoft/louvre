@@ -58,12 +58,12 @@ export class FilesService {
     }
 
     if (!filter || filter === '/' || filter === this.currentPath()) {
-      return raw_files;
+      return raw_files.filter((f) => this.isMedia(f.name));
     }
     // Only return images that live exactly inside the filtered subfolder
     // Only return images that live exactly inside the filtered subfolder
     // OR any of its nested folders.
-    return raw_files.filter((f) => f.path.startsWith(filter + '/'));
+    return raw_files.filter((f) => this.isMedia(f.name) && f.path.startsWith(filter + '/'));
   });
 
   public uniqueFaces = computed(() => {
@@ -335,6 +335,60 @@ export class FilesService {
     } finally {
       this.isLoading.set(false);
     }
+    this.displayService.pageIndex.set(0);
+  }
+
+  isMedia(filename: string): boolean {
+    const parts = filename.split('.');
+    if (parts.length > 1) {
+      return parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES();
+    }
+    return false;
+  }
+
+  async deleteFolder(folderPath: string) {
+    try {
+      this.isLoading.set(true);
+
+      let rootHandle: FileSystemDirectoryHandle | null = null;
+      for (const recent of this.recentDirectories()) {
+        if (recent.name === this.currentPath()) {
+          rootHandle = recent.handle;
+          break;
+        }
+      }
+      if (!rootHandle) {
+        console.error('Could not find root directory handle');
+        return;
+      }
+
+      const parts = folderPath.split('/');
+      const dirName = parts.pop()!;
+      const parentPath = parts.join('/');
+
+      let parentHandle = rootHandle;
+      if (parentPath) {
+        parentHandle = await this.fileSystemService.getDirectoryHandleByPath(
+          rootHandle,
+          parentPath,
+        );
+      }
+
+      await parentHandle.removeEntry(dirName, { recursive: true });
+
+      const remaining = this.files_raw().filter(
+        (f: FileWithType) => !f.path.startsWith(folderPath + '/'),
+      );
+      this.updateFileList(remaining);
+      this.files_original.set([...remaining]);
+
+      const cacheKey = `dir_cache_${rootHandle.name}`;
+      await set(cacheKey, remaining);
+    } catch (e) {
+      console.error('Failed to delete folder', e);
+    } finally {
+      this.isLoading.set(false);
+    }
   }
 
   setNewDirectory(path: string) {
@@ -380,15 +434,12 @@ export class FilesService {
     const files: FileWithType[] = [];
 
     for await (const entry of this.fileSystemService.readDirectory(dirHandle)) {
-      const parts = entry.handle.name.split('.');
-      if (parts.length > 1 && parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES()) {
-        files.push({
-          name: entry.handle.name,
-          path: entry.path,
-          handle: entry.handle,
-          parentHandle: entry.parentHandle,
-        });
-      }
+      files.push({
+        name: entry.handle.name,
+        path: entry.path,
+        handle: entry.handle,
+        parentHandle: entry.parentHandle,
+      });
     }
 
     this.files_original.set([...files]);
@@ -410,17 +461,14 @@ export class FilesService {
     const cachedFileMap = new Map(cachedFiles.map((f) => [f.path, f]));
 
     for await (const entry of this.fileSystemService.readDirectory(dirHandle)) {
-      const parts = entry.handle.name.split('.');
-      if (parts.length > 1 && parts.at(-1)!.toLocaleLowerCase() in this.SUPPORTED_FILETYPES()) {
-        const cachedMatch = cachedFileMap.get(entry.path);
-        files.push({
-          name: entry.handle.name,
-          path: entry.path,
-          handle: entry.handle,
-          parentHandle: entry.parentHandle,
-          faces: cachedMatch?.faces,
-        });
-      }
+      const cachedMatch = cachedFileMap.get(entry.path);
+      files.push({
+        name: entry.handle.name,
+        path: entry.path,
+        handle: entry.handle,
+        parentHandle: entry.parentHandle,
+        faces: cachedMatch?.faces,
+      });
     }
 
     // Replace the files

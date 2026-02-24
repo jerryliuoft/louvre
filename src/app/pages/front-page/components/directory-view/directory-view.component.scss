@@ -1,3 +1,40 @@
 :host {
   padding: 12px;
 }
+
+.delete-folder-btn {
+  opacity: 0.4;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+  transform: scale(0.85);
+
+  &:hover {
+    opacity: 1;
+    color: #ef5350;
+  }
+}
+
+.others-section {
+  margin-top: 16px;
+  margin-bottom: 24px;
+  padding: 16px;
+  background-color: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+
+  .section-header {
+    margin-bottom: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
