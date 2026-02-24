@@ -6,14 +6,7 @@
     <app-header class="header-sticky" (toggleMenuEvent)="sidenav.toggle()"></app-header>
     @if (filesService.isLoading()) {
       <div class="flex-container align-items-center justify-content-center">
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 16px">
-          <mat-spinner [diameter]="40"></mat-spinner>
-          @if (filesService.moveProgress(); as progress) {
-            <span style="color: white"
-              >Moving files: {{ progress.current }} / {{ progress.total }}</span
-            >
-          }
-        </div>
+        <mat-spinner [diameter]="40"></mat-spinner>
       </div>
     }
     @if (displayService.displayType() === 'item') {

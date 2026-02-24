@@ -2,6 +2,10 @@ import { Injectable, signal, computed } from '@angular/core';
 import { FileWithType } from '../models/file.model';
 import { FileSystemService } from './file-system.service';
 import { FaceRecognitionService } from './face-recognition.service';
+import { DisplayService } from './display.service';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { MoveProgressDialogComponent } from '../components/move-progress-dialog/move-progress-dialog.component';
+import { MoveFolderDialogComponent } from '../components/move-folder-dialog/move-folder-dialog.component';
 import { get, set } from 'idb-keyval';
 
 export interface RecentDirectory {
@@ -119,6 +123,8 @@ export class FilesService {
   constructor(
     private fileSystemService: FileSystemService,
     private faceRecognitionService: FaceRecognitionService,
+    private dialog: MatDialog,
+    private displayService: DisplayService,
   ) {
     this.loadRecentDirectories();
     this.loadMoveDestinations();
@@ -195,7 +201,31 @@ export class FilesService {
     }
 
     this.isLoading.set(true);
+    let dialogRef: MatDialogRef<MoveProgressDialogComponent> | null = null;
+
     try {
+      // 1. Prompt for rename/confirmation first
+      const renameDialogRef = this.dialog.open(MoveFolderDialogComponent, {
+        data: {
+          folderName: currentSubPath.split('/').pop()!,
+          destHandle: destRootHandle,
+        },
+        width: '400px',
+      });
+
+      const targetDirName = await renameDialogRef.afterClosed().toPromise();
+      if (!targetDirName) {
+        // User cancelled
+        this.isLoading.set(false);
+        return;
+      }
+
+      // 2. Proceed with move
+      dialogRef = this.dialog.open(MoveProgressDialogComponent, {
+        disableClose: true,
+        width: '400px',
+      });
+
       const options: FileSystemHandlePermissionDescriptor = { mode: 'readwrite' };
       if ((await destRootHandle.queryPermission(options)) !== 'granted') {
         if ((await destRootHandle.requestPermission(options)) !== 'granted') {
@@ -234,11 +264,18 @@ export class FilesService {
         sourceParentHandle,
         sourceDirName,
         destRootHandle,
+        targetDirName,
         (copied, total) => {
           this.moveProgress.set({ current: copied, total });
         },
       );
       await this.saveMoveDestination(destRootHandle);
+
+      // Update the local file paths if the folder was renamed
+      let updatedPath = currentSubPath;
+      if (targetDirName !== sourceDirName) {
+        updatedPath = parentPath ? `${parentPath}/${targetDirName}` : targetDirName;
+      }
 
       const remainingFiles = this.files_raw().filter(
         (f: FileWithType) => !f.path.startsWith(currentSubPath + '/'),
@@ -256,6 +293,7 @@ export class FilesService {
     } finally {
       this.moveProgress.set(null);
       this.isLoading.set(false);
+      dialogRef?.close();
     }
   }
 
@@ -300,6 +338,7 @@ export class FilesService {
   }
 
   setNewDirectory(path: string) {
+    this.displayService.pageIndex.set(0);
     if (path === this.currentPath() || path === 'undefined') {
       this.subPathFilter.set(''); // Root level
     } else {

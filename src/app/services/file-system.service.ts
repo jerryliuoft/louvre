@@ -13,6 +13,20 @@ export class FileSystemService {
     return handle;
   }
 
+  async exists(parent: FileSystemDirectoryHandle, name: string): Promise<boolean> {
+    try {
+      await parent.getDirectoryHandle(name);
+      return true;
+    } catch {
+      try {
+        await parent.getFileHandle(name);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  }
+
   async *readDirectory(
     dirHandle: FileSystemDirectoryHandle,
     path = '',
@@ -99,13 +113,15 @@ export class FileSystemService {
     sourceParentHandle: FileSystemDirectoryHandle,
     sourceDirName: string,
     destRootHandle: FileSystemDirectoryHandle,
+    targetDirName?: string,
     onProgress?: (copied: number, total: number) => void,
   ): Promise<void> {
     // 1. Get the source directory handle
     const sourceHandle = await sourceParentHandle.getDirectoryHandle(sourceDirName);
 
-    // 2. Create the destination directory handle (same name as source)
-    const destHandle = await destRootHandle.getDirectoryHandle(sourceDirName, { create: true });
+    // 2. Create the destination directory handle (same name as source unless targetDirName is provided)
+    const destName = targetDirName || sourceDirName;
+    const destHandle = await destRootHandle.getDirectoryHandle(destName, { create: true });
 
     // 3. Recursively copy contents
     let total = 0;

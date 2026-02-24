@@ -1,11 +1,20 @@
 <div class="flex-container align-items-center">
   @for (part of parsedPaths(); track part; let last = $last) {
-    @if (last) {
-      <mat-chip style="font-weight: bold">{{ getChipTitle(part) }}</mat-chip>
-    } @else {
-      <mat-chip style="cursor: pointer" (click)="goToDirectory(part)">{{
-        getChipTitle(part)
-      }}</mat-chip>
+    <mat-chip
+      [style.cursor]="filesService.subPathFilter() === part ? 'default' : 'pointer'"
+      [style.font-weight]="
+        filesService.subPathFilter() === part ||
+        (part === '/' &&
+          (filesService.subPathFilter() === '' ||
+            filesService.subPathFilter() === filesService.currentPath()))
+          ? 'bold'
+          : 'normal'
+      "
+      (click)="goToDirectory(part)"
+    >
+      {{ getChipTitle(part) }}
+    </mat-chip>
+    @if (!last) {
       <span style="margin: 0 8px">/</span>
     }
   }

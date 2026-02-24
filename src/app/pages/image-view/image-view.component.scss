@@ -11,11 +11,10 @@
   transform: scale(1) translate(0px, 0px);
   cursor: grab;
 
-  img {
-    transform-origin: 0px 0px;
-    transform: scale(1) translate(0px, 0px);
-    cursor: grab;
+  img,
+  video {
     width: 100%;
-    height: auto;
+    height: 100%;
+    object-fit: contain;
   }
 }

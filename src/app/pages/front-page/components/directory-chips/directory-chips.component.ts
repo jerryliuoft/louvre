@@ -15,17 +15,22 @@ export class DirectoryChipsComponent {
   filesService = inject(FilesService);
 
   protected parsedPaths = computed(() => {
-    // change 1/2/3 to an array [1, 1/2, 1/2/3]
+    // change 1/2/3 to an array [/, 1, 1/2, 1/2/3]
 
     const cur_path = this.path();
-    const paths = [];
-    let i = 1;
-    while ((i = cur_path.indexOf('/', i) + 1)) {
-      paths.push(cur_path.substring(0, i - 1));
+    const paths: string[] = ['/'];
+    if (!cur_path || cur_path === '' || cur_path === '/') {
+      return paths;
     }
-    paths.push(cur_path);
-    const result = paths.filter((p) => p !== '');
-    return result.length ? result : ['/'];
+
+    const segments = cur_path.split('/');
+    let current = '';
+    for (const segment of segments) {
+      if (segment === '') continue;
+      current = current ? `${current}/${segment}` : segment;
+      paths.push(current);
+    }
+    return paths;
   });
 
   getChipTitle(folder_path: string) {

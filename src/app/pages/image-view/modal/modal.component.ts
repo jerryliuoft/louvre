@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, HostListener } from '@angular/core';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ImageViewComponent } from '../image-view.component';
 import { FilesService } from '../../../services/files.service';
@@ -73,6 +73,15 @@ export class ModalComponent implements OnInit {
     const idx = files.findIndex((f: FileWithType) => f.path === this.currentFile()?.path);
     if (idx >= 0 && idx < files.length - 1) {
       this.currentFile.set(files[idx + 1]);
+    }
+  }
+
+  @HostListener('window:keydown', ['$event'])
+  handleKeyDown(event: KeyboardEvent) {
+    if (event.key === 'ArrowLeft') {
+      this.prev();
+    } else if (event.key === 'ArrowRight') {
+      this.next();
     }
   }
 }

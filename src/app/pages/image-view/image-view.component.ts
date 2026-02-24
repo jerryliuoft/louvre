@@ -94,6 +94,8 @@ export class ImageViewComponent {
   }
 
   onKeyDown(e: KeyboardEvent) {
-    this.dialogRef.close();
+    if (e.key === 'Escape') {
+      this.dialogRef.close();
+    }
   }
 }
