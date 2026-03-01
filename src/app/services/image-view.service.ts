@@ -11,6 +11,8 @@ export class ImageViewService {
   readonly dialog = inject(MatDialog);
 
   openDialog(file: FileWithType): void {
+    if (this.dialog.openDialogs.length > 0) return;
+
     const dialogRef = this.dialog.open(ModalComponent, {
       data: { file },
       maxWidth: '100vw',
