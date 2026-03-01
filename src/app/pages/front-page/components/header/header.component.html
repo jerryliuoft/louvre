@@ -109,7 +109,7 @@
       (page)="handlePageEvent($event)"
       [length]="
         displayService.displayType() === 'folder'
-          ? filesService.directoryOrdered().length
+          ? filesService.displayedDirectories().length
           : filesService.imagesOrdered().length
       "
       [pageSize]="displayService.pageSize()"
