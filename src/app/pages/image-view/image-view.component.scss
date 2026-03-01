@@ -18,3 +18,31 @@
     object-fit: contain;
   }
 }
+
+.video-controls-overlay {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 20px;
+  z-index: 1000;
+
+  .video-control-btn {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    color: white !important;
+    width: 56px !important;
+    height: 56px !important;
+
+    ::ng-deep mat-icon {
+      font-size: 36px;
+      width: 36px;
+      height: 36px;
+      line-height: 36px;
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.8) !important;
+    }
+  }
+}

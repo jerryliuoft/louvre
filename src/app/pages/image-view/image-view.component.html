@@ -22,3 +22,24 @@
     ></video>
   }
 </div>
+
+@if (!isImg()) {
+  <div class="video-controls-overlay">
+    <button
+      mat-icon-button
+      class="video-control-btn"
+      (click)="skip(-10, $event)"
+      title="Rewind 10s"
+    >
+      <mat-icon>replay_10</mat-icon>
+    </button>
+    <button
+      mat-icon-button
+      class="video-control-btn"
+      (click)="skip(10, $event)"
+      title="Forward 10s"
+    >
+      <mat-icon>forward_10</mat-icon>
+    </button>
+  </div>
+}

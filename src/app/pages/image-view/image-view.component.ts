@@ -5,11 +5,13 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { ModalComponent } from './modal/modal.component';
 import { FileWithType } from '../../models/file.model';
 import { ObjectUrlPipe } from '../../pipes/object-url.pipe';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 
 @Component({
   selector: 'app-image-view',
   standalone: true,
-  imports: [NgStyle, HeaderComponent, ObjectUrlPipe],
+  imports: [NgStyle, HeaderComponent, ObjectUrlPipe, MatIconModule, MatButtonModule],
   templateUrl: './image-view.component.html',
   styleUrl: './image-view.component.scss',
 })
@@ -96,6 +98,13 @@ export class ImageViewComponent {
   onKeyDown(e: KeyboardEvent) {
     if (e.key === 'Escape') {
       this.dialogRef.close();
+    }
+  }
+
+  skip(seconds: number, event: MouseEvent) {
+    event.stopPropagation();
+    if (this.mainIamge && this.mainIamge.nativeElement instanceof HTMLVideoElement) {
+      this.mainIamge.nativeElement.currentTime += seconds;
     }
   }
 }
