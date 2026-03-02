@@ -83,15 +83,20 @@ export class ImageViewComponent {
   onWheel(e: WheelEvent) {
     e.preventDefault();
     let delta = -e.deltaY;
-    let xs = (e.clientX - this.pointX) / this.scale;
-    let ys = (e.clientY - this.pointY) / this.scale;
+
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const cursorX = e.clientX - rect.left;
+    const cursorY = e.clientY - rect.top;
+
+    let xs = (cursorX - this.pointX) / this.scale;
+    let ys = (cursorY - this.pointY) / this.scale;
     if (delta > 0) {
       this.scale *= 1.2;
     } else {
       this.scale /= 1.2;
     }
-    this.pointX = e.clientX - xs * this.scale;
-    this.pointY = e.clientY - ys * this.scale;
+    this.pointX = cursorX - xs * this.scale;
+    this.pointY = cursorY - ys * this.scale;
     this.transform();
   }
 
