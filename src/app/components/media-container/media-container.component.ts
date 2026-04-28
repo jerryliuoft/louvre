@@ -24,6 +24,7 @@ const SUPPORTED_VIDEO_TYPES = {
 })
 export class MediaContainerComponent {
   height = computed(() => this.displayService.imageConfigs().height);
+  isMuted = computed(() => this.displayService.muted());
   file = input.required<FileWithType>();
 
   constructor(

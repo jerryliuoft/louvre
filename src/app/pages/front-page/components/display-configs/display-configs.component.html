@@ -41,4 +41,17 @@
       }
     </mat-radio-group>
   </mat-expansion-panel>
+  <mat-expansion-panel expanded>
+    <mat-expansion-panel-header>
+      <mat-panel-title>Video audio</mat-panel-title>
+    </mat-expansion-panel-header>
+    <div class="toggle-row">
+      <span>Mute all videos</span>
+      <mat-slide-toggle
+        [checked]="displayService.muted()"
+        (change)="displayService.muted.set($event.checked)"
+        aria-label="Mute all videos"
+      ></mat-slide-toggle>
+    </div>
+  </mat-expansion-panel>
 </mat-accordion>

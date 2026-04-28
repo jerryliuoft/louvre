@@ -11,6 +11,7 @@ import { get, set } from 'idb-keyval';
 export interface RecentDirectory {
   name: string;
   handle: FileSystemDirectoryHandle;
+  fullPath?: string;
 }
 
 @Injectable({
@@ -166,14 +167,37 @@ export class FilesService {
 
   private async saveMoveDestination(handle: FileSystemDirectoryHandle) {
     const current = this.moveDestinations();
+    const resolvedPath = await this.resolveDirectoryDisplayPath(handle);
     const filtered = current.filter((d: RecentDirectory) => d.name !== handle.name);
-    const updated = [{ name: handle.name, handle }, ...filtered].slice(0, 10);
+    const updated = [{ name: handle.name, handle, fullPath: resolvedPath }, ...filtered].slice(0, 10);
     this.moveDestinations.set(updated);
     try {
       await set('move_destinations', updated);
     } catch (e) {
       console.warn('Failed to save move destinations', e);
     }
+  }
+
+  private async resolveDirectoryDisplayPath(
+    targetHandle: FileSystemDirectoryHandle,
+  ): Promise<string | undefined> {
+    for (const recent of this.recentDirectories()) {
+      try {
+        if (await recent.handle.isSameEntry(targetHandle)) {
+          return recent.name;
+        }
+
+        const relativePath = await recent.handle.resolve(targetHandle);
+        if (relativePath) {
+          const suffix = relativePath.join('/');
+          return suffix ? `${recent.name}/${suffix}` : recent.name;
+        }
+      } catch {
+        // Ignore handles that cannot be resolved due to permission or relationship.
+      }
+    }
+
+    return undefined;
   }
 
   async pickMoveDestination() {

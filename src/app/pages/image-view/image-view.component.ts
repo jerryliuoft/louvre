@@ -7,6 +7,7 @@ import { FileWithType } from '../../models/file.model';
 import { ObjectUrlPipe } from '../../pipes/object-url.pipe';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { DisplayService } from '../../services/display.service';
 
 @Component({
   selector: 'app-image-view',
@@ -18,6 +19,7 @@ import { MatButtonModule } from '@angular/material/button';
 export class ImageViewComponent {
   file = input.required<FileWithType>();
   dialogRef = inject(MatDialogRef<ModalComponent>);
+  protected displayService = inject(DisplayService);
 
   @ViewChild('mainImage') mainIamge!: ElementRef;
 

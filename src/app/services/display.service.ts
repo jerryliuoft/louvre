@@ -7,6 +7,7 @@ export class DisplayService {
   pageSize = signal(50); // how many images to display
   pageIndex = signal(0); // current page number
   folderPreviewSize = signal(5); // Number of images to show on the folder preview
+  muted = signal(true); // Global mute preference for video playback
 
   // configurations for the images
   imageConfigs = signal<{
@@ -27,6 +28,7 @@ export class DisplayService {
         imageConfigs: this.imageConfigs(),
         pageSize: this.pageSize(),
         folderPreviewSize: this.folderPreviewSize(),
+        muted: this.muted(),
       };
       localStorage.setItem('displayService', JSON.stringify(config));
     });
@@ -37,6 +39,7 @@ export class DisplayService {
       this.pageSize.set(config.pageSize);
       this.folderPreviewSize.set(config.folderPreviewSize);
       this.imageConfigs.set(config.imageConfigs);
+      this.muted.set(config.muted ?? true);
     }
   }
 }

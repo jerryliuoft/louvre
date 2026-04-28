@@ -15,6 +15,7 @@
       #mainImage
       [src]="file().handle | objectUrl"
       [ngStyle]="customStyle()"
+      [muted]="displayService.muted()"
       controls
       controlsList="nofullscreen"
       autoplay
@@ -28,18 +29,18 @@
     <button
       mat-icon-button
       class="video-control-btn"
-      (click)="skip(-10, $event)"
-      title="Rewind 10s"
+      (click)="skip(-5, $event)"
+      title="Rewind 5s"
     >
-      <mat-icon>replay_10</mat-icon>
+      <mat-icon>replay_5</mat-icon>
     </button>
     <button
       mat-icon-button
       class="video-control-btn"
-      (click)="skip(10, $event)"
-      title="Forward 10s"
+      (click)="skip(5, $event)"
+      title="Forward 5s"
     >
-      <mat-icon>forward_10</mat-icon>
+      <mat-icon>forward_5</mat-icon>
     </button>
   </div>
 }

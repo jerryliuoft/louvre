@@ -3,12 +3,23 @@ import { DisplayService } from '../../../../services/display.service';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 
 @Component({
   selector: 'app-display-configs',
   standalone: true,
-  imports: [MatButtonToggleModule, MatExpansionModule, MatRadioModule],
+  imports: [MatButtonToggleModule, MatExpansionModule, MatRadioModule, MatSlideToggleModule],
   templateUrl: './display-configs.component.html',
+  styles: [
+    `
+      .toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+      }
+    `,
+  ],
 })
 export class DisplayConfigsComponent {
   protected pageSizes = new Map([

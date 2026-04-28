@@ -88,7 +88,12 @@
         @if (filesService.moveDestinations().length > 0) {
           <mat-divider></mat-divider>
           @for (dest of filesService.moveDestinations(); track dest.name) {
-            <button mat-menu-item (click)="filesService.moveCurrentFolder(dest.handle)">
+            <button
+              mat-menu-item
+              [matTooltip]="dest.fullPath || dest.name"
+              [matTooltipShowDelay]="250"
+              (click)="filesService.moveCurrentFolder(dest.handle)"
+            >
               <mat-icon>folder</mat-icon>
               <span>Move to {{ dest.name }}</span>
             </button>
